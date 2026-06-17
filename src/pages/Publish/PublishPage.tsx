@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Header } from '../../components/Layout';
 import { useStore } from '../../store';
 import { StoryType, AgeGroup, AGE_GROUP_LABELS } from '../../types';
 import { popularTags } from '../../data/mock';
-
-interface PublishPageProps {
-  onBack: () => void;
-  onSuccess: () => void;
-}
 
 const STORY_TYPES: { value: StoryType; label: string; description: string; icon: string }[] = [
   { value: 'vent', label: '倾诉', description: '表达情感，释放压力', icon: '💭' },
@@ -21,7 +17,8 @@ const anonymousNames = [
   '月光漫步', '落叶知秋', '远方的山', '静默的树', '溪流低语',
 ];
 
-export const PublishPage: React.FC<PublishPageProps> = ({ onBack, onSuccess }) => {
+export const PublishPage: React.FC = () => {
+  const navigate = useNavigate();
   const { addStory, user } = useStore();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -56,7 +53,13 @@ export const PublishPage: React.FC<PublishPageProps> = ({ onBack, onSuccess }) =
       },
     });
 
-    onSuccess();
+    navigate('/');
+  };
+
+  const handleBack = () => {
+    if (step === 'content') setStep('type');
+    else if (step === 'info') setStep('content');
+    else navigate('/');
   };
 
   const renderStepType = () => (
@@ -215,11 +218,7 @@ export const PublishPage: React.FC<PublishPageProps> = ({ onBack, onSuccess }) =
           step === 'type' ? '选择类型' : step === 'content' ? '写故事' : '发布设置'
         }
         showBack
-        onBack={() => {
-          if (step === 'content') setStep('type');
-          else if (step === 'info') setStep('content');
-          else onBack();
-        }}
+        onBack={handleBack}
       />
 
       <main className="max-w-md mx-auto px-4 py-4">

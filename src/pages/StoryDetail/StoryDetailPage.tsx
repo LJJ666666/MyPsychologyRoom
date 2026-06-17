@@ -1,35 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Heart, Bookmark, Share2 } from 'lucide-react';
 import { Header } from '../../components/Layout';
 import { Comment } from '../../components/Comment';
 import { EmptyState } from '../../components/common';
 import { useStore } from '../../store';
-import { Story, AGE_GROUP_LABELS, STORY_TYPE_LABELS, STORY_TYPE_COLORS } from '../../types';
+import { AGE_GROUP_LABELS, STORY_TYPE_LABELS, STORY_TYPE_COLORS } from '../../types';
 
-interface StoryDetailPageProps {
-  storyId: string;
-  onBack: () => void;
-}
-
-export const StoryDetailPage: React.FC<StoryDetailPageProps> = ({ storyId, onBack }) => {
+export const StoryDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { stories, likeStory, collectStory, addComment, user } = useStore();
-  const [story, setStory] = useState<Story | null>(null);
   const [commentText, setCommentText] = useState('');
 
-  useEffect(() => {
-    const foundStory = stories.find((s) => s.id === storyId);
-    setStory(foundStory || null);
-  }, [storyId, stories]);
+  const story = stories.find((s) => s.id === id) || null;
 
   if (!story) {
     return (
       <div className="min-h-screen bg-background">
-        <Header title="故事详情" showBack onBack={onBack} />
+        <Header title="故事详情" showBack onBack={() => navigate(-1)} />
         <EmptyState
           icon="🔍"
           title="故事不存在"
           description="该故事可能已被删除或不存在"
-          action={{ label: '返回', onClick: onBack }}
+          action={{ label: '返回', onClick: () => navigate('/') }}
         />
       </div>
     );
@@ -50,6 +44,7 @@ export const StoryDetailPage: React.FC<StoryDetailPageProps> = ({ storyId, onBac
       author: {
         nickname: user?.nickname || '匿名用户',
         ageGroup: user?.ageGroup || 'worker',
+        avatar: '',
       },
     });
     setCommentText('');
@@ -57,7 +52,7 @@ export const StoryDetailPage: React.FC<StoryDetailPageProps> = ({ storyId, onBac
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <Header title="故事详情" showBack onBack={onBack} />
+      <Header title="故事详情" showBack onBack={() => navigate(-1)} />
 
       <main className="max-w-md mx-auto px-4 py-4">
         {/* Story Content */}
@@ -65,7 +60,7 @@ export const StoryDetailPage: React.FC<StoryDetailPageProps> = ({ storyId, onBac
           {/* Author Info */}
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-xl">
-              {story.author.avatar}
+              {story.author.avatar || '👤'}
             </div>
             <div>
               <div className="font-medium text-foreground">{story.author.nickname}</div>

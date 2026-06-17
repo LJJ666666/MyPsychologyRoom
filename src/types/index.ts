@@ -14,6 +14,7 @@ export interface Comment {
   author: {
     nickname: string;
     ageGroup: AgeGroup;
+    avatar?: string;
   };
   createdAt: string;
   likes: number;

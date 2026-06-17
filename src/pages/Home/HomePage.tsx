@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, TrendingUp, Clock } from 'lucide-react';
 import { Header, BottomNav } from '../../components/Layout';
 import { StoryCard } from '../../components/StoryCard';
@@ -6,12 +7,8 @@ import { TagFilter, EmptyState } from '../../components/common';
 import { useStore } from '../../store';
 import { popularTags } from '../../data/mock';
 
-export interface HomePageProps {
-  onStoryClick?: (storyId: string) => void;
-  onPublish?: () => void;
-}
-
-export default function HomePage({ onStoryClick, onPublish }: HomePageProps) {
+export default function HomePage() {
+  const navigate = useNavigate();
   const { stories, storyFilter, setStoryFilter, selectedTag, setSelectedTag } = useStore();
 
   const filteredStories = stories
@@ -65,7 +62,7 @@ export default function HomePage({ onStoryClick, onPublish }: HomePageProps) {
             icon="📝"
             title="暂无故事"
             description={selectedTag ? '该话题下还没有故事，来发布第一篇吧' : '还没有人发布故事，你是第一个'}
-            action={onPublish ? { label: '发布故事', onClick: onPublish } : undefined}
+            action={{ label: '发布故事', onClick: () => navigate('/publish') }}
           />
         ) : (
           <div className="space-y-4 stagger-children">
@@ -73,21 +70,19 @@ export default function HomePage({ onStoryClick, onPublish }: HomePageProps) {
               <StoryCard
                 key={story.id}
                 story={story}
-                onClick={() => onStoryClick?.(story.id)}
+                onClick={() => navigate(`/story/${story.id}`)}
               />
             ))}
           </div>
         )}
       </main>
 
-      {onPublish && (
-        <button
-          onClick={onPublish}
-          className="fixed right-4 bottom-20 w-14 h-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 z-40"
-        >
-          <Plus size={28} strokeWidth={2.5} />
-        </button>
-      )}
+      <button
+        onClick={() => navigate('/publish')}
+        className="fixed right-4 bottom-20 w-14 h-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 z-40"
+      >
+        <Plus size={28} strokeWidth={2.5} />
+      </button>
 
       <BottomNav />
     </div>
