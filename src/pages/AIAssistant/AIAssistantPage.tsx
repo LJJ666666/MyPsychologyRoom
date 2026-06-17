@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, RefreshCw } from 'lucide-react';
+
 import { Header } from '../../components/Layout';
 import { ChatBubble } from '../../components/ChatBubble';
 import { useStore } from '../../store';
 import { getAIResponse } from '../../data/mock';
+import { Card, Button } from '../../components/ui';
 
 export const AIAssistantPage: React.FC = () => {
   const { messages, addMessage, clearMessages } = useStore();
@@ -22,14 +24,12 @@ export const AIAssistantPage: React.FC = () => {
   const handleSend = () => {
     if (!inputText.trim() || isTyping) return;
 
-    // Add user message
     addMessage({
       role: 'user',
       content: inputText.trim(),
     });
     setInputText('');
 
-    // Simulate AI typing
     setIsTyping(true);
     setTimeout(() => {
       const response = getAIResponse(inputText);
@@ -47,17 +47,18 @@ export const AIAssistantPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <Header
         title="AI心理助手"
         rightContent={
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleClear}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted hover:text-foreground transition-colors rounded-full hover:bg-gray-100"
+            className="flex items-center gap-1.5"
           >
             <RefreshCw size={16} />
             新对话
-          </button>
+          </Button>
         }
       />
 
@@ -65,17 +66,19 @@ export const AIAssistantPage: React.FC = () => {
       <main className="flex-1 overflow-y-auto px-4 py-4">
         <div className="max-w-md mx-auto">
           {/* Welcome Card */}
-          <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-5 mb-6 text-center animate-fade-in">
-            <div className="w-16 h-16 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-soft">
-              <span className="text-3xl">🌸</span>
+          <Card className="!bg-gradient-to-br !from-primary/5 !to-accent/5 !shadow-none !border-0 mb-6">
+            <div className="text-center animate-fade-in">
+              <div className="w-16 h-16 mx-auto mb-3 bg-surface rounded-full flex items-center justify-center shadow-soft">
+                <span className="text-3xl">🌸</span>
+              </div>
+              <h2 className="font-serif text-lg font-medium text-foreground mb-2">
+                你好，我是你的AI心理助手
+              </h2>
+              <p className="text-sm text-muted leading-relaxed">
+                在这里，你可以安全地倾诉自己的困惑和烦恼。我会用心倾听，给予共情和温暖的回应。
+              </p>
             </div>
-            <h2 className="font-serif text-lg font-medium text-foreground mb-2">
-              你好，我是你的AI心理助手
-            </h2>
-            <p className="text-sm text-muted leading-relaxed">
-              在这里，你可以安全地倾诉自己的困惑和烦恼。我会用心倾听，给予共情和温暖的回应。
-            </p>
-          </div>
+          </Card>
 
           {/* Messages */}
           <div className="space-y-1">
@@ -89,7 +92,7 @@ export const AIAssistantPage: React.FC = () => {
                 <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
                   <span className="text-lg">🌸</span>
                 </div>
-                <div className="bg-white shadow-soft px-4 py-3 rounded-2xl rounded-tl-sm">
+                <div className="bg-surface shadow-soft px-4 py-3 rounded-2xl rounded-tl-sm">
                   <div className="flex gap-1">
                     <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -105,7 +108,7 @@ export const AIAssistantPage: React.FC = () => {
       </main>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
+      <div className="bg-surface border-t border-border px-4 py-3 safe-area-bottom">
         <div className="max-w-md mx-auto flex gap-3">
           <input
             type="text"
@@ -113,7 +116,7 @@ export const AIAssistantPage: React.FC = () => {
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="倾诉你的心事..."
-            className="flex-1 px-5 py-3.5 bg-secondary/50 rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/20 transition-shadow"
+            className="flex-1 px-5 py-3.5 bg-surface-muted rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/20 transition-shadow"
             disabled={isTyping}
           />
           <button
@@ -131,3 +134,5 @@ export const AIAssistantPage: React.FC = () => {
     </div>
   );
 };
+
+export default AIAssistantPage;

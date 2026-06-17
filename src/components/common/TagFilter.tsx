@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Tag } from '../ui';
+
 interface TagFilterProps {
   tags: string[];
   selectedTag: string | null;
@@ -13,29 +15,25 @@ export const TagFilter: React.FC<TagFilterProps> = ({
 }) => {
   return (
     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-      <button
+      <Tag
+        variant={selectedTag === null ? 'primary' : 'outline'}
         onClick={() => onSelectTag(null)}
-        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-          selectedTag === null
-            ? 'bg-primary text-white shadow-sm'
-            : 'bg-white text-muted hover:bg-gray-50 border border-gray-100'
-        }`}
+        className="!py-2 !px-4 !text-sm whitespace-nowrap"
       >
         全部
-      </button>
+      </Tag>
       {tags.map((tag) => (
-        <button
+        <Tag
           key={tag}
+          variant={selectedTag === tag ? 'primary' : 'outline'}
           onClick={() => onSelectTag(tag === selectedTag ? null : tag)}
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-            selectedTag === tag
-              ? 'bg-primary text-white shadow-sm'
-              : 'bg-white text-muted hover:bg-gray-50 border border-gray-100'
-          }`}
+          className="!py-2 !px-4 !text-sm whitespace-nowrap"
         >
           #{tag}
-        </button>
+        </Tag>
       ))}
     </div>
   );
 };
+
+export default TagFilter;

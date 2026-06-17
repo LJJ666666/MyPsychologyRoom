@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Avatar, Button } from '../ui';
+
 interface EmptyStateProps {
   icon?: React.ReactNode;
   title: string;
@@ -18,21 +20,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in">
-      <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4 text-3xl">
+      <Avatar size="lg" variant="secondary" className="mb-4">
         {icon || '📭'}
-      </div>
+      </Avatar>
       <h3 className="font-medium text-foreground mb-2">{title}</h3>
       {description && (
         <p className="text-sm text-muted mb-6 max-w-xs">{description}</p>
       )}
       {action && (
-        <button
-          onClick={action.onClick}
-          className="px-6 py-2.5 bg-primary text-white rounded-full text-sm font-medium hover:bg-primary-dark transition-colors"
-        >
+        <Button variant="primary" size="md" onClick={action.onClick}>
           {action.label}
-        </button>
+        </Button>
       )}
     </div>
   );
 };
+
+export default EmptyState;

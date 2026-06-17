@@ -7,11 +7,13 @@ import {
   ChevronRight,
   LogOut,
 } from 'lucide-react';
+
 import { Header } from '../../components/Layout';
 import { EmptyState } from '../../components/common';
 import { StoryCard } from '../../components/StoryCard';
 import { useStore } from '../../store';
 import { AGE_GROUP_LABELS, AgeGroup } from '../../types';
+import { Card, Divider, Avatar } from '../../components/ui';
 
 type TabType = 'stories' | 'collections';
 
@@ -43,11 +45,11 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
 
       <main className="max-w-md mx-auto px-4 py-4">
         {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-card p-5 mb-6 animate-fade-in">
+        <Card padding="lg" className="mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-2xl">
+            <Avatar size="lg" variant="secondary">
               {user?.ageGroup ? AGE_GROUP_ICONS[user.ageGroup] : '😊'}
-            </div>
+            </Avatar>
             <div className="flex-1">
               {user ? (
                 <>
@@ -70,7 +72,8 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
           </div>
 
           {/* Stats */}
-          <div className="flex gap-6 mt-5 pt-4 border-t border-gray-100">
+          <Divider className="mt-5" />
+          <div className="flex gap-6 pt-4">
             <div className="text-center flex-1">
               <div className="text-xl font-semibold text-foreground">
                 {myStories.length}
@@ -90,16 +93,16 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
               <div className="text-xs text-muted">获得温暖</div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Tab Content */}
         <div className="mb-6">
-          <div className="flex gap-4 border-b border-gray-100 mb-4">
+          <div className="flex gap-4 border-b border-border mb-4">
             <button
               onClick={() => setActiveTab('stories')}
               className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'stories'
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-primary-dark'
                   : 'border-transparent text-muted'
               }`}
             >
@@ -109,7 +112,7 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
               onClick={() => setActiveTab('collections')}
               className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'collections'
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-primary-dark'
                   : 'border-transparent text-muted'
               }`}
             >
@@ -159,13 +162,13 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
         </div>
 
         {/* Menu List */}
-        <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+        <Card padding="none" className="overflow-hidden">
           {menuItems.map((item, index) => (
             <button
               key={item.label}
               onClick={item.onClick}
-              className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 transition-colors ${
-                index !== menuItems.length - 1 ? 'border-b border-gray-50' : ''
+              className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-surface-muted transition-colors ${
+                index !== menuItems.length - 1 ? 'border-b border-divider' : ''
               }`}
             >
               <item.icon size={20} className="text-muted" />
@@ -175,13 +178,13 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
               <ChevronRight size={18} className="text-muted" />
             </button>
           ))}
-        </div>
+        </Card>
 
         {/* Logout */}
         {user && (
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 mt-4 py-3 text-sm text-muted hover:text-red-500 transition-colors"
+            className="w-full flex items-center justify-center gap-2 mt-4 py-3 text-sm text-muted hover:text-danger transition-colors"
           >
             <LogOut size={18} />
             退出登录
@@ -191,3 +194,5 @@ export const ProfilePage: React.FC<{ onStoryClick?: (storyId: string) => void }>
     </div>
   );
 };
+
+export default ProfilePage;

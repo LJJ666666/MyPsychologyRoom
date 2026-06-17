@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { Message } from '../../types';
+import { Avatar } from '../ui';
 
 interface ChatBubbleProps {
   message: Message;
@@ -12,25 +14,15 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
     <div
       className={`flex gap-3 mb-4 animate-fade-in ${isUser ? 'flex-row-reverse' : ''}`}
     >
-      {/* Avatar */}
-      <div
-        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
-          isUser ? 'bg-primary' : 'bg-secondary'
-        }`}
-      >
-        {isUser ? (
-          <span className="text-lg">😊</span>
-        ) : (
-          <span className="text-lg">🌸</span>
-        )}
-      </div>
+      <Avatar size="sm" variant={isUser ? 'primary' : 'secondary'}>
+        {isUser ? '😊' : '🌸'}
+      </Avatar>
 
-      {/* Bubble */}
       <div
         className={`max-w-[75%] px-4 py-3 rounded-2xl ${
           isUser
             ? 'bg-primary/10 text-foreground rounded-tr-sm'
-            : 'bg-white shadow-soft text-foreground rounded-tl-sm'
+            : 'bg-surface shadow-soft text-foreground rounded-tl-sm'
         }`}
       >
         <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
@@ -44,3 +36,5 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
     </div>
   );
 };
+
+export default ChatBubble;
