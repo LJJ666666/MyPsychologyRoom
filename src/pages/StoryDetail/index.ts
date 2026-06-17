@@ -1,0 +1,1 @@
+export { StoryDetailPage } from './StoryDetailPage';

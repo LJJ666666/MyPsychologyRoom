@@ -1,0 +1,1 @@
+export { CrossAgePage } from './CrossAgePage';

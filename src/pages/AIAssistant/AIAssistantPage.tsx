@@ -1,0 +1,133 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, RefreshCw } from 'lucide-react';
+import { Header } from '../../components/Layout';
+import { ChatBubble } from '../../components/ChatBubble';
+import { useStore } from '../../store';
+import { getAIResponse } from '../../data/mock';
+
+export const AIAssistantPage: React.FC = () => {
+  const { messages, addMessage, clearMessages } = useStore();
+  const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!inputText.trim() || isTyping) return;
+
+    // Add user message
+    addMessage({
+      role: 'user',
+      content: inputText.trim(),
+    });
+    setInputText('');
+
+    // Simulate AI typing
+    setIsTyping(true);
+    setTimeout(() => {
+      const response = getAIResponse(inputText);
+      addMessage({
+        role: 'ai',
+        content: response,
+      });
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const handleClear = () => {
+    clearMessages();
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <Header
+        title="AI心理助手"
+        rightContent={
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted hover:text-foreground transition-colors rounded-full hover:bg-gray-100"
+          >
+            <RefreshCw size={16} />
+            新对话
+          </button>
+        }
+      />
+
+      {/* Chat Area */}
+      <main className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="max-w-md mx-auto">
+          {/* Welcome Card */}
+          <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-2xl p-5 mb-6 text-center animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-3 bg-white rounded-full flex items-center justify-center shadow-soft">
+              <span className="text-3xl">🌸</span>
+            </div>
+            <h2 className="font-serif text-lg font-medium text-foreground mb-2">
+              你好，我是你的AI心理助手
+            </h2>
+            <p className="text-sm text-muted leading-relaxed">
+              在这里，你可以安全地倾诉自己的困惑和烦恼。我会用心倾听，给予共情和温暖的回应。
+            </p>
+          </div>
+
+          {/* Messages */}
+          <div className="space-y-1">
+            {messages.map((message) => (
+              <ChatBubble key={message.id} message={message} />
+            ))}
+
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex gap-3 mb-4 animate-fade-in">
+                <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">🌸</span>
+                </div>
+                <div className="bg-white shadow-soft px-4 py-3 rounded-2xl rounded-tl-sm">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div ref={messagesEndRef} />
+        </div>
+      </main>
+
+      {/* Input Area */}
+      <div className="bg-white border-t border-gray-100 px-4 py-3 safe-area-bottom">
+        <div className="max-w-md mx-auto flex gap-3">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="倾诉你的心事..."
+            className="flex-1 px-5 py-3.5 bg-secondary/50 rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/20 transition-shadow"
+            disabled={isTyping}
+          />
+          <button
+            onClick={handleSend}
+            disabled={!inputText.trim() || isTyping}
+            className="w-12 h-12 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+          >
+            <Send size={20} strokeWidth={2} />
+          </button>
+        </div>
+        <p className="text-xs text-center text-muted mt-3">
+          AI助手仅供参考，如有严重心理困扰请寻求专业帮助
+        </p>
+      </div>
+    </div>
+  );
+};
