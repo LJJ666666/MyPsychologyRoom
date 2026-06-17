@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import HomePage from './pages/Home';
+import { useState } from 'react';
+import HomePage from './pages/Home/HomePage';
 import { StoryDetailPage } from './pages/StoryDetail';
 import { PublishPage } from './pages/Publish';
 

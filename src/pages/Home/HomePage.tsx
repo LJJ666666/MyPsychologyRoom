@@ -6,7 +6,7 @@ import { TagFilter, EmptyState } from '../../components/common';
 import { useStore } from '../../store';
 import { popularTags } from '../../data/mock';
 
-interface HomePageProps {
+export interface HomePageProps {
   onStoryClick?: (storyId: string) => void;
   onPublish?: () => void;
 }

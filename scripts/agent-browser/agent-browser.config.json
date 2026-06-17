@@ -1,0 +1,59 @@
+{
+  "session": "psychology-room-dev",
+  "default-url": "http://localhost:5173",
+  "viewport": {
+    "desktop": { "width": 1440, "height": 900 },
+    "tablet": { "width": 768, "height": 1024 },
+    "mobile": { "width": 375, "height": 812 }
+  },
+  "pages": [
+    {
+      "name": "首页/故事广场",
+      "url": "/",
+      "checkpoints": [
+        "标题: 心理治疗室",
+        "底部导航栏存在",
+        "故事卡片可见",
+        "筛选按钮: 最新/最热"
+      ]
+    },
+    {
+      "name": "故事详情",
+      "url": "/story/1",
+      "checkpoints": [
+        "故事正文完整展示",
+        "评论区存在",
+        "点赞/收藏按钮可见"
+      ]
+    },
+    {
+      "name": "AI心理助手",
+      "url": "/",
+      "nav-click": "AI助手",
+      "checkpoints": [
+        "对话气泡存在",
+        "输入框和发送按钮可见"
+      ]
+    },
+    {
+      "name": "跨龄视角",
+      "url": "/",
+      "nav-click": "跨龄视角",
+      "checkpoints": [
+        "4个年龄段Tab可切换",
+        "当前选中Tab样式有区别"
+      ]
+    },
+    {
+      "name": "个人中心",
+      "url": "/",
+      "nav-click": "我的",
+      "checkpoints": [
+        "用户信息区域存在",
+        "我的故事/我的收藏Tab可见",
+        "设置菜单列表存在"
+      ]
+    }
+  ],
+  "output-dir": "./dogfood-output"
+}
