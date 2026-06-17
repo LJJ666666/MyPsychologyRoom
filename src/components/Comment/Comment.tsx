@@ -8,7 +8,7 @@ interface CommentProps {
 
 export const Comment: React.FC<CommentProps> = ({ comment }) => {
   return (
-    <div className="flex gap-3 py-4 border-b border-gray-50 last:border-0 animate-fade-in">
+    <div className="flex gap-3 py-4 border-b border-divider last:border-0 animate-fade-in">
       <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm flex-shrink-0">
         {comment.author.ageGroup === 'teen' && '🌱'}
         {comment.author.ageGroup === 'worker' && '🌿'}

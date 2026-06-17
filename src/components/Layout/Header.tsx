@@ -17,13 +17,13 @@ export const Header: React.FC<HeaderProps> = ({
   rightContent,
 }) => {
   return (
-    <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 z-40">
+    <header className="sticky top-0 bg-surface/95 backdrop-blur-sm border-b border-border z-40">
       <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center">
           {showBack && (
             <button
               onClick={onBack}
-              className="mr-3 p-1 -ml-1 rounded-lg hover:bg-gray-100 transition-colors"
+              className="mr-3 p-1 -ml-1 rounded-lg hover:bg-surface-muted transition-colors"
             >
               <svg
                 width="24"
@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
           {showSearch ? (
-            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-64">
+            <div className="flex items-center bg-surface-muted rounded-full px-4 py-2 w-64">
               <Search size={18} className="text-muted mr-2" />
               <input
                 type="text"
@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
         {rightContent || (
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
+            <button className="p-2 rounded-full hover:bg-surface-muted transition-colors relative">
               <Bell size={22} className="text-foreground" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full" />
             </button>

@@ -2,11 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Heart, Home, Users, User } from 'lucide-react';
 
-interface BottomNavProps {
-  className?: string;
-}
-
-export const BottomNav: React.FC<BottomNavProps> = ({ className = '' }) => {
+export const BottomNav: React.FC = () => {
   const tabs = [
     { id: 'home', label: '故事', icon: Home, to: '/' },
     { id: 'ai', label: 'AI助手', icon: Heart, to: '/ai' },
@@ -15,9 +11,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ className = '' }) => {
   ];
 
   return (
-    <nav
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-2 z-50 ${className}`}
-    >
+    <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 py-2 z-50">
       <div className="max-w-md mx-auto flex justify-around items-center">
         {tabs.map((tab) => {
           const Icon = tab.icon;

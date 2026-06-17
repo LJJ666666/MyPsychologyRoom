@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, MessageCircle, Bookmark } from 'lucide-react';
-import { Story, AGE_GROUP_LABELS, STORY_TYPE_LABELS, STORY_TYPE_COLORS } from '../../types';
+import { Story, AGE_GROUP_LABELS, STORY_TYPE_LABELS } from '../../types';
+import { Card, Avatar, Tag, Badge, Divider } from '../ui';
 import { useStore } from '../../store';
 
 interface StoryCardProps {
@@ -22,52 +23,44 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onClick }) => {
   };
 
   return (
-    <article
-      onClick={onClick}
-      className="bg-white rounded-2xl p-5 shadow-card cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 animate-fade-in"
-    >
-      {/* Header */}
+    <Card hoverable onClick={onClick}>
+      {/* Header: 头像 + 昵称 + 故事类型 Badge */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-xl">
-            {story.author.avatar}
-          </div>
+          <Avatar variant="secondary">{story.author.avatar}</Avatar>
           <div>
-            <div className="font-medium text-foreground">{story.author.nickname}</div>
-            <div className="text-xs text-muted">
+            <div className="font-medium text-foreground text-sm">{story.author.nickname}</div>
+            <div className="text-2xs text-muted">
               {AGE_GROUP_LABELS[story.author.ageGroup]} · {story.createdAt}
             </div>
           </div>
         </div>
-        <span
-          className={`px-2.5 py-1 rounded-full text-xs font-medium ${STORY_TYPE_COLORS[story.type]}`}
-        >
+        <Badge variant={story.type === 'vent' ? 'accent' : 'primary'}>
           {STORY_TYPE_LABELS[story.type]}
-        </span>
+        </Badge>
       </div>
 
-      {/* Content */}
-      <h3 className="font-serif text-lg font-medium text-foreground mb-2 leading-relaxed">
+      {/* Content: 标题 + 正文摘要 + 话题标签 */}
+      <h3 className="font-serif text-lg font-medium text-foreground mb-2 leading-snug">
         {story.title}
       </h3>
       <p className="text-sm text-muted leading-relaxed line-clamp-3 mb-3">
         {story.content}
       </p>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {story.tags.map((tag) => (
-          <span
-            key={tag}
-            className="px-2.5 py-1 bg-gray-100 text-muted text-xs rounded-full"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
+      {story.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {story.tags.map((tag) => (
+            <Tag key={tag} size="sm" variant="outline">
+              #{tag}
+            </Tag>
+          ))}
+        </div>
+      )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-6 pt-3 border-t border-gray-50">
+      {/* Actions: 点赞 + 评论 + 收藏 */}
+      <Divider />
+      <div className="flex items-center gap-6 pt-3">
         <button
           onClick={handleLike}
           className={`flex items-center gap-1.5 text-sm transition-colors ${
@@ -98,6 +91,8 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onClick }) => {
           />
         </button>
       </div>
-    </article>
+    </Card>
   );
 };
+
+export default StoryCard;
