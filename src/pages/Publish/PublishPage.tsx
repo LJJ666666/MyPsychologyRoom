@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Header } from '../../components/Layout';
 import { useStore } from '../../store';
+import { useAuth } from '../../hooks/useAuth';
 import { StoryType, AgeGroup, AGE_GROUP_LABELS } from '../../types';
 import { popularTags } from '../../data/mock';
 import { Card, Button, Tag, Divider } from '../../components/ui';
@@ -18,7 +19,7 @@ const anonymousNames = [
   '月光漫步', '落叶知秋', '远方的山', '静默的树', '溪流低语',
 ];
 
-export const PublishPage: React.FC = () => {
+const PublishContent: React.FC = () => {
   const navigate = useNavigate();
   const { addStory, user } = useStore();
   const [title, setTitle] = useState('');
@@ -225,6 +226,49 @@ export const PublishPage: React.FC = () => {
       </main>
     </div>
   );
+};
+
+const LoginRequired: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header title="发布故事" showBack onBack={() => navigate('/')} />
+
+      <main className="max-w-md mx-auto px-4 py-12">
+        <Card padding="lg" className="text-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+            <span className="text-4xl">🔒</span>
+          </div>
+          <h2 className="font-serif text-xl font-medium text-foreground mb-2">
+            需要登录才能发布
+          </h2>
+          <p className="text-sm text-muted mb-6">
+            登录后可以发布故事、评论和互动。你的身份完全匿名，请放心使用。
+          </p>
+          <Button variant="primary" size="lg" fullWidth onClick={() => navigate('/login')}>
+            立即登录
+          </Button>
+          <button
+            onClick={() => navigate('/')}
+            className="mt-3 text-sm text-muted hover:text-foreground transition-colors"
+          >
+            返回故事广场
+          </button>
+        </Card>
+      </main>
+    </div>
+  );
+};
+
+export const PublishPage: React.FC = () => {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <LoginRequired />;
+  }
+
+  return <PublishContent />;
 };
 
 export default PublishPage;

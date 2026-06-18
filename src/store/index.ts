@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Story, Comment, Message, AgeGroup } from '../types';
+import { Story, Comment, Message, AgeGroup, User } from '../types';
 import { mockStories } from '../data/mock';
 
 interface AppState {
@@ -12,12 +12,8 @@ interface AppState {
   addComment: (storyId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'likes'>) => void;
 
   // User
-  user: {
-    nickname: string;
-    ageGroup: AgeGroup;
-    isLoggedIn: boolean;
-  } | null;
-  setUser: (user: { nickname: string; ageGroup: AgeGroup }) => void;
+  user: User | null;
+  setUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
   logout: () => void;
 
   // My stories
@@ -103,7 +99,7 @@ export const useStore = create<AppState>()(
 
       // User
       user: null,
-      setUser: (user) => set({ user: { ...user, isLoggedIn: true } }),
+      setUser: (user) => set({ user: { ...user, id: `user-${Date.now()}`, createdAt: new Date().toISOString() } }),
       logout: () => set({ user: null }),
 
       // My stories

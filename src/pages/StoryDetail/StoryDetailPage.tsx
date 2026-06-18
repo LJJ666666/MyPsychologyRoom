@@ -4,6 +4,7 @@ import { Heart, Bookmark, Share2 } from 'lucide-react';
 import { Header } from '../../components/Layout';
 import { Comment } from '../../components/Comment';
 import { useStore } from '../../store';
+import { useAuth } from '../../hooks/useAuth';
 import { AGE_GROUP_LABELS, STORY_TYPE_LABELS } from '../../types';
 import { Card, Avatar, Tag, Badge, Divider, Button } from '../../components/ui';
 
@@ -11,19 +12,32 @@ export const StoryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { stories, likeStory, collectStory, addComment, user } = useStore();
+  const { isLoggedIn } = useAuth();
   const [commentText, setCommentText] = useState('');
 
   const story = stories.find((s) => s.id === id) || null;
 
   const handleLike = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     if (story) likeStory(story.id);
   };
 
   const handleCollect = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     if (story) collectStory(story.id);
   };
 
   const handleComment = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     if (!commentText.trim() || !story) return;
     addComment(story.id, {
       content: commentText.trim(),
@@ -166,16 +180,21 @@ export const StoryDetailPage: React.FC = () => {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleComment()}
-            placeholder="写下你的安慰或建议..."
-            className="flex-1 px-5 py-3 bg-surface-muted rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/30 transition-shadow"
+            placeholder={isLoggedIn ? '写下你的安慰或建议...' : '登录后可以留言'}
+            disabled={!isLoggedIn}
+            className={`flex-1 px-5 py-3 rounded-full text-sm outline-none transition-shadow ${
+              isLoggedIn
+                ? 'bg-surface-muted placeholder-muted focus:ring-2 focus:ring-primary/30'
+                : 'bg-surface-muted/50 placeholder-muted/50 cursor-not-allowed'
+            }`}
           />
           <Button
             variant="primary"
             size="md"
             onClick={handleComment}
-            disabled={!commentText.trim()}
+            disabled={!commentText.trim() || !isLoggedIn}
           >
-            发送
+            {isLoggedIn ? '发送' : '登录'}
           </Button>
         </div>
       </div>

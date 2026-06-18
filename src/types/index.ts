@@ -62,6 +62,7 @@ export interface User {
   id: string;
   nickname: string;
   ageGroup: AgeGroup;
+  email: string | null;
   createdAt: string;
 }
 
