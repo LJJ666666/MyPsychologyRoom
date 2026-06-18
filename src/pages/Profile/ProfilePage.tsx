@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LogOut,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Header, BottomNav } from '../../components/Layout';
 import { useStore } from '../../store';
@@ -21,6 +22,7 @@ const AGE_GROUP_ICONS: Record<AgeGroup, string> = {
 };
 
 export const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   const { user, myStories, stories, logout } = useStore();
   const collectedStories = stories.filter((story) => story.isCollected);
 
@@ -55,6 +57,12 @@ export const ProfilePage: React.FC = () => {
     },
   ];
 
+  const handleProfileClick = () => {
+    if (!user) {
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <Header title="个人中心" />
@@ -62,7 +70,10 @@ export const ProfilePage: React.FC = () => {
       <main className="max-w-md mx-auto px-4 py-4">
         {/* 个人资料卡 */}
         <Card padding="md" className="mb-4">
-          <button className="flex items-center gap-4 w-full">
+          <button
+            onClick={handleProfileClick}
+            className="flex items-center gap-4 w-full"
+          >
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-xl">
               {avatarIcon}
             </div>
@@ -133,6 +144,19 @@ export const ProfilePage: React.FC = () => {
             >
               <LogOut size={18} />
               退出登录
+            </button>
+          </Card>
+        )}
+
+        {/* 登录入口 */}
+        {!user && (
+          <Card padding="none" className="overflow-hidden">
+            <button
+              onClick={() => navigate('/login')}
+              className="w-full flex items-center justify-center gap-2 py-3.5 hover:bg-surface-muted transition-colors text-sm text-primary-dark"
+            >
+              <User size={18} />
+              立即登录
             </button>
           </Card>
         )}

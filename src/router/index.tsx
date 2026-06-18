@@ -5,6 +5,7 @@ import { PublishPage } from '../pages/Publish/PublishPage';
 import { AIAssistantPage } from '../pages/AIAssistant/AIAssistantPage';
 import { CrossAgePage } from '../pages/CrossAge/CrossAgePage';
 import { ProfilePage } from '../pages/Profile/ProfilePage';
+import { LoginPage } from '../pages/Login/LoginPage';
 import { storyDetailLoader } from './loaders';
 import { storyDetailAction, publishAction } from './actions';
 
@@ -35,5 +36,9 @@ export const router = createBrowserRouter([
   {
     path: '/profile',
     element: <ProfilePage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
   },
 ]);
