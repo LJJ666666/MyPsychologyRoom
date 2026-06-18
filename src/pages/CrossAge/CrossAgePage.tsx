@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 
-import { Header } from '../../components/Layout';
+import { Header, BottomNav } from '../../components/Layout';
 import { crossAgeTopics } from '../../data/mock';
 import { CrossAgeTopic, AgeGroup, AGE_GROUP_LABELS } from '../../types';
 import { Card, Tag, Divider, Avatar } from '../../components/ui';
@@ -136,6 +136,8 @@ export const CrossAgePage: React.FC = () => {
             ))}
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 };

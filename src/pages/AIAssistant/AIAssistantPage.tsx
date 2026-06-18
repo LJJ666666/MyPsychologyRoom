@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, RefreshCw } from 'lucide-react';
 
-import { Header } from '../../components/Layout';
+import { Header, BottomNav } from '../../components/Layout';
 import { ChatBubble } from '../../components/ChatBubble';
 import { useStore } from '../../store';
 import { getAIResponse } from '../../data/mock';
@@ -46,7 +46,7 @@ export const AIAssistantPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pb-24">
       <Header
         title="AI心理助手"
         rightContent={
@@ -64,7 +64,7 @@ export const AIAssistantPage: React.FC = () => {
 
       {/* Chat Area */}
       <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto pb-8">
           {/* Welcome Card */}
           <Card className="!bg-gradient-to-br !from-primary/5 !to-accent/5 !shadow-none !border-0 mb-6">
             <div className="text-center animate-fade-in">
@@ -107,8 +107,8 @@ export const AIAssistantPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Input Area */}
-      <div className="bg-surface border-t border-border px-4 py-3 safe-area-bottom">
+      {/* Input Area - 在 BottomNav 上方 */}
+      <div className="fixed left-0 right-0 z-40 bg-surface border-t border-border px-4 py-3" style={{ bottom: '64px' }}>
         <div className="max-w-md mx-auto flex gap-3">
           <input
             type="text"
@@ -131,6 +131,8 @@ export const AIAssistantPage: React.FC = () => {
           AI助手仅供参考，如有严重心理困扰请寻求专业帮助
         </p>
       </div>
+
+      <BottomNav />
     </div>
   );
 };
