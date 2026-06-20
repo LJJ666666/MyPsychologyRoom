@@ -4,6 +4,7 @@ import { Bookmark, Eye } from 'lucide-react';
 
 import { Header } from '../../components/Layout';
 import { StoryCard } from '../../components/StoryCard';
+import { EmptyState } from '../../components/common';
 import { useStore } from '../../store';
 import { useAuth } from '../../hooks/useAuth';
 import { Card, Button } from '../../components/ui';
@@ -51,14 +52,12 @@ export const MyCollectionsPage: React.FC = () => {
 
       <main className="max-w-md mx-auto px-4 py-4">
         {collectedStories.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="text-5xl mb-4">📚</div>
-            <h3 className="font-medium text-foreground mb-2">还没有收藏的故事</h3>
-            <p className="text-sm text-muted mb-6">去故事广场发现让你温暖的故事吧</p>
-            <Button variant="primary" size="md" onClick={() => navigate('/')}>
-              浏览故事
-            </Button>
-          </div>
+          <EmptyState
+            icon="📚"
+            title="还没有收藏的故事"
+            description="去故事广场发现让你温暖的故事吧"
+            action={{ label: '浏览故事', onClick: () => navigate('/') }}
+          />
         ) : (
           <div className="space-y-4">
             {collectedStories.map((story) => story && (

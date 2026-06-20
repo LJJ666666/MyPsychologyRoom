@@ -7,14 +7,16 @@ import { useStore } from '../../store';
 import { useAuth } from '../../hooks/useAuth';
 import { AGE_GROUP_LABELS, STORY_TYPE_LABELS } from '../../types';
 import { Card, Avatar, Tag, Badge, Divider, Button } from '../../components/ui';
+import { EmptyState } from '../../components/common';
 import { formatRelativeTime } from '../../utils/formatTime';
 
 export const StoryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { stories, likeStory, collectStory, addComment, user } = useStore();
+  const { stories, likeStory, collectStory, addComment, likeComment, removeComment, user } = useStore();
   const { isLoggedIn } = useAuth();
   const [commentText, setCommentText] = useState('');
+  const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const story = stories.find((s) => s.id === id) || null;
 
@@ -40,8 +42,11 @@ export const StoryDetailPage: React.FC = () => {
       return;
     }
     if (!commentText.trim() || !story) return;
+    const prefix = replyTo
+      ? `回复 @${story.comments.find((c) => c.id === replyTo)?.author.nickname || ''}：`
+      : '';
     addComment(story.id, {
-      content: commentText.trim(),
+      content: `${prefix}${commentText.trim()}`,
       author: {
         nickname: user?.nickname || '匿名用户',
         ageGroup: user?.ageGroup || 'worker',
@@ -49,20 +54,19 @@ export const StoryDetailPage: React.FC = () => {
       },
     });
     setCommentText('');
+    setReplyTo(null);
   };
 
   if (!story) {
     return (
       <div className="min-h-screen bg-background">
         <Header title="故事详情" showBack onBack={() => navigate(-1)} />
-        <div className="max-w-md mx-auto px-4 py-16 text-center">
-          <div className="text-5xl mb-4">🔍</div>
-          <h3 className="font-medium text-foreground mb-2">故事不存在</h3>
-          <p className="text-sm text-muted mb-6">该故事可能已被删除或链接错误</p>
-          <Button variant="primary" size="md" onClick={() => navigate('/')}>
-            返回首页
-          </Button>
-        </div>
+        <EmptyState
+          icon="🔍"
+          title="故事不存在"
+          description="该故事可能已被删除或链接错误"
+          action={{ label: '返回首页', onClick: () => navigate('/') }}
+        />
       </div>
     );
   }
@@ -157,16 +161,36 @@ export const StoryDetailPage: React.FC = () => {
           </h2>
 
           {story.comments.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-muted text-sm mb-1">还没有人留言</p>
-              <p className="text-muted text-xs">成为第一个安慰 Ta 的人吧 💛</p>
-            </div>
+            <EmptyState
+              icon="💭"
+              title="还没有人留言"
+              description="成为第一个安慰 Ta 的人吧"
+            />
           ) : (
             <div className="space-y-1">
               {story.comments.map((comment) => (
-                <React.Fragment key={comment.id}>
-                  <Comment comment={comment} />
-                </React.Fragment>
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  onLike={isLoggedIn ? () => likeComment(story.id, comment.id) : () => navigate('/login')}
+                  onReply={isLoggedIn ? () => {
+                    setReplyTo(comment.id);
+                    const input = document.querySelector('input[data-comment-input]') as HTMLInputElement | null;
+                    if (input) input.focus();
+                  } : undefined}
+                  onDelete={
+                    isLoggedIn && comment.author.nickname === user?.nickname
+                      ? () => {
+                          if (confirm('确定删除这条评论吗？')) {
+                            removeComment(story.id, comment.id);
+                          }
+                        }
+                      : undefined
+                  }
+                  canDelete={
+                    isLoggedIn && !!user && comment.author.nickname === user.nickname
+                  }
+                />
               ))}
             </div>
           )}
@@ -174,29 +198,44 @@ export const StoryDetailPage: React.FC = () => {
       </main>
 
       {/* 底部评论输入栏 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 py-3 z-50">
-        <div className="max-w-md mx-auto flex gap-3">
-          <input
-            type="text"
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleComment()}
-            placeholder={isLoggedIn ? '写下你的安慰或建议...' : '登录后可以留言'}
-            disabled={!isLoggedIn}
-            className={`flex-1 px-5 py-3 rounded-full text-sm outline-none transition-shadow ${
-              isLoggedIn
-                ? 'bg-surface-muted placeholder-muted focus:ring-2 focus:ring-primary/30'
-                : 'bg-surface-muted/50 placeholder-muted/50 cursor-not-allowed'
-            }`}
-          />
-          <Button
-            variant="primary"
-            size="md"
-            onClick={handleComment}
-            disabled={!commentText.trim() || !isLoggedIn}
-          >
-            {isLoggedIn ? '发送' : '登录'}
-          </Button>
+      <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 pt-3 pb-4 z-50">
+        <div className="max-w-md mx-auto">
+          {replyTo && isLoggedIn && (
+            <div className="flex items-center justify-between mb-2 text-xs text-muted bg-surface-muted rounded-lg px-3 py-2">
+              <span>
+                正在回复
+                @
+                {story?.comments.find((c) => c.id === replyTo)?.author.nickname}
+              </span>
+              <button onClick={() => setReplyTo(null)} className="hover:text-foreground">
+                取消
+              </button>
+            </div>
+          )}
+          <div className="flex gap-3">
+            <input
+              data-comment-input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleComment()}
+              placeholder={isLoggedIn ? '写下你的安慰或建议...' : '登录后可以留言'}
+              disabled={!isLoggedIn}
+              className={`flex-1 px-5 py-3 rounded-full text-sm outline-none transition-shadow ${
+                isLoggedIn
+                  ? 'bg-surface-muted placeholder-muted focus:ring-2 focus:ring-primary/30'
+                  : 'bg-surface-muted/50 placeholder-muted/50 cursor-not-allowed'
+              }`}
+            />
+            <Button
+              variant="primary"
+              size="md"
+              onClick={handleComment}
+              disabled={!commentText.trim() || !isLoggedIn}
+            >
+              {isLoggedIn ? '发送' : '登录'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

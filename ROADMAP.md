@@ -184,6 +184,59 @@
 
 ---
 
+### Sprint 4 — 社区功能深化（发布/评论/个人中心）
+- 目标：完善故事发布流程、深化评论互动、统一空状态、补充专项测试
+- 负责人：开发
+- 状态：✅ 已完成
+
+#### 任务清单
+| 序号 | 任务 | 交付物 |
+|------|------|--------|
+| 4.1 | 完善发布页（表单校验、发布后跳转、字数提示、删除后 feed 同步） | `src/pages/Publish/PublishPage.tsx` / `src/store/index.ts` 补充 `removeStory` |
+| 4.2 | 评论互动（点赞、删除个人评论、回复入口） | `src/pages/StoryDetail/StoryDetailPage.tsx` + `src/components/Comment/Comment.tsx` |
+| 4.3 | 统一空状态组件（EmptyState），为加载态加 Skeleton | `src/components/common/EmptyState.tsx` |
+| 4.4 | 补充专项测试（PublishPage / MyStories / EditProfile） | `src/__tests__/pages/*.test.tsx` |
+
+#### 核心成果
+- **store 扩展**：新增 `removeStory`（stories + myStories 同步删除）、`likeComment`、`removeComment`
+- **发布流程**：发布后自动跳转首页；新故事出现在 feed 第一条；删除同步
+- **评论互动**：每条评论可点赞，登录用户可删除自己发布的评论；回复入口已接入
+- **统一空状态**：首页空 feed、故事详情空评论、我的故事空列表、我的收藏空列表，全部使用 `EmptyState` 组件
+- **Service 层**：`storyService.ts` 从 `removeMyStory` 迁移到新的 `removeStory`，保证删除后 feed 同步
+- **类型修正**：`User` 增加可选 `avatar?: string`，满足个人中心头像管理需求
+- **测试增长**：共 74 条测试（新增 19 条专项测试）
+
+#### 质量门禁验证
+- `npm test`：74 / 74 通过 ✅
+- `npm run lint`：0 错误 ✅
+- `npm run check`：tsc 无类型错误 ✅
+- `npm run build`：Vite 构建成功 ✅
+
+---
+
+### Sprint 5 — 跨年龄视角 + 页面联调（阶段 2）
+- 目标：打通跨年龄视角（CrossAge）页面、完善个人中心 Tab 联动、补充移动端截图回归
+- 负责人：开发
+- 状态：📌 待启动
+- **预计启动时间**：Sprint 4 完成后立即开始
+
+#### 任务清单（规划稿）
+| 序号 | 任务 | 交付物 | 验证方式 |
+|------|------|--------|----------|
+| 5.1 | CrossAge 页面：按年龄段展示热点话题与多视角 | `src/pages/CrossAge/CrossAgePage.tsx` | 页面渲染，可切换年龄段 |
+| 5.2 | CrossAge Card 组件：统一话题卡片样式 | `src/components/CrossAge/CrossAgeCard.tsx` | 卡片可点击进入详情 |
+| 5.3 | 个人中心 Tab 联动：我的故事/我的收藏/编辑个人信息正确跳转 | `src/pages/Profile/ProfilePage.tsx` | 点击 Tab 正确切换页面 |
+| 5.4 | 移动端截图回归：iPhone / iPad / 桌面三视口各页面截图 | `agent-browser` 截图脚本 | 所有页面无白屏，布局正确 |
+| 5.5 | QA/文档：补充测试、更新 ROADMAP.md | `src/__tests__/pages/CrossAgePage.test.tsx`、`ROADMAP.md` | 质量门禁通过 |
+
+#### 完成标准
+- CrossAge 页面可浏览至少 3 个年龄段话题
+- 个人中心 Tab 点击后正确跳转（我的故事/我的收藏/编辑个人信息）
+- 三视口截图无白屏、无错位
+- `npm test`（预期 ≥ 80 条）、`npm run lint`、`npm run check`、`npm run build` 全部通过
+
+---
+
 ## 七、云端开发注意事项 ⚠️
 
 > 本节记录 TRAE 云端开发环境中开发服务器（dev server）常见的坑和标准操作流程。

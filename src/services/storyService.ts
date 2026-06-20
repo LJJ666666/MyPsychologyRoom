@@ -12,7 +12,7 @@ export function useStoryService() {
     stories,
     myStories,
     addStory,
-    removeMyStory,
+    removeStory,
     likeStory,
     collectStory,
     addComment,
@@ -47,7 +47,7 @@ export function useStoryService() {
   ): void => addStory(story);
 
   /** 删除当前用户的故事 */
-  const deleteMyStory = (storyId: string): void => removeMyStory(storyId);
+  const deleteMyStory = (storyId: string): void => removeStory(storyId);
 
   /** 点赞/取消点赞故事 */
   const toggleLike = (storyId: string): void => likeStory(storyId);

@@ -14,6 +14,7 @@ export interface Comment {
   author: Author;
   createdAt: string;
   likes: number;
+  isLiked?: boolean;
 }
 
 export interface Story {
@@ -58,6 +59,7 @@ export interface User {
   id: string;
   nickname: string;
   ageGroup: AgeGroup;
+  avatar?: string;
   email?: string | null;
   createdAt: string;
 }

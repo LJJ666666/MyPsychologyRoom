@@ -18,9 +18,11 @@ interface StoriesDomain {
   stories: Story[];
   myStories: Story[];
   addStory: (story: Omit<Story, 'id' | 'createdAt' | 'likes' | 'comments' | 'isLiked' | 'isCollected'>) => void;
-  removeMyStory: (storyId: string) => void;
+  removeStory: (storyId: string) => void;
   likeStory: (storyId: string) => void;
   addComment: (storyId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'likes'>) => void;
+  likeComment: (storyId: string, commentId: string) => void;
+  removeComment: (storyId: string, commentId: string) => void;
 }
 
 interface CollectionsDomain {
@@ -94,8 +96,9 @@ export const useStore = create<AppStore>()(
           myStories: [newStory, ...state.myStories],
         }));
       },
-      removeMyStory: (storyId) =>
+      removeStory: (storyId) =>
         set((state) => ({
+          stories: state.stories.filter((s) => s.id !== storyId),
           myStories: state.myStories.filter((s) => s.id !== storyId),
         })),
       likeStory: (storyId) =>
@@ -116,6 +119,7 @@ export const useStore = create<AppStore>()(
           id: generateId('comment'),
           createdAt: new Date().toISOString(),
           likes: 0,
+          isLiked: false,
         };
         set((state) => ({
           stories: state.stories.map((story) =>
@@ -125,6 +129,33 @@ export const useStore = create<AppStore>()(
           ),
         }));
       },
+      likeComment: (storyId, commentId) =>
+        set((state) => ({
+          stories: state.stories.map((story) =>
+            story.id === storyId
+              ? {
+                  ...story,
+                  comments: story.comments.map((c) =>
+                    c.id === commentId
+                      ? {
+                          ...c,
+                          isLiked: !c.isLiked,
+                          likes: c.isLiked ? c.likes - 1 : c.likes + 1,
+                        }
+                      : c
+                  ),
+                }
+              : story
+          ),
+        })),
+      removeComment: (storyId, commentId) =>
+        set((state) => ({
+          stories: state.stories.map((story) =>
+            story.id === storyId
+              ? { ...story, comments: story.comments.filter((c) => c.id !== commentId) }
+              : story
+          ),
+        })),
 
       // —— 收藏领域（CollectionsDomain）——
       myCollections: [],
@@ -211,8 +242,8 @@ export const useStore = create<AppStore>()(
 
 // 各领域 selector hooks（按需使用）
 export const useStories = () => {
-  const { stories, myStories, addStory, removeMyStory, likeStory, addComment } = useStore();
-  return { stories, myStories, addStory, removeMyStory, likeStory, addComment };
+  const { stories, myStories, addStory, removeStory, likeStory, addComment, likeComment, removeComment } = useStore();
+  return { stories, myStories, addStory, removeStory, likeStory, addComment, likeComment, removeComment };
 };
 
 export const useCollections = () => {

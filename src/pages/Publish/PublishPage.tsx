@@ -29,6 +29,7 @@ const PublishContent: React.FC = () => {
   const [nickname, setNickname] = useState(user?.nickname || '');
   const [ageGroup, setAgeGroup] = useState<AgeGroup>(user?.ageGroup || 'worker');
   const [step, setStep] = useState<'type' | 'content' | 'info'>('type');
+  const [publishing, setPublishing] = useState(false);
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
@@ -39,6 +40,7 @@ const PublishContent: React.FC = () => {
   const handlePublish = () => {
     if (!title.trim() || !content.trim()) return;
 
+    setPublishing(true);
     const randomName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
 
     addStory({
@@ -55,7 +57,11 @@ const PublishContent: React.FC = () => {
       },
     });
 
-    navigate('/');
+    // 给用户一个短暂的反馈，再跳转首页
+    setTimeout(() => {
+      setPublishing(false);
+      navigate('/');
+    }, 400);
   };
 
   const handleBack = () => {
@@ -218,8 +224,8 @@ const PublishContent: React.FC = () => {
 
             <Divider />
 
-            <Button variant="primary" size="lg" fullWidth onClick={handlePublish}>
-              发布故事
+            <Button variant="primary" size="lg" fullWidth onClick={handlePublish} disabled={publishing}>
+              {publishing ? '发布中...' : '发布故事'}
             </Button>
           </div>
         )}

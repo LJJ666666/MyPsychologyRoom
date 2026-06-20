@@ -4,13 +4,14 @@ import { Trash2, Eye } from 'lucide-react';
 
 import { Header } from '../../components/Layout';
 import { StoryCard } from '../../components/StoryCard';
+import { EmptyState } from '../../components/common';
 import { useStore } from '../../store';
 import { useAuth } from '../../hooks/useAuth';
 import { Card, Button } from '../../components/ui';
 
 export const MyStoriesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { myStories, removeMyStory, stories } = useStore();
+  const { myStories, removeStory, stories } = useStore();
   const { isLoggedIn } = useAuth();
 
   // 从全量 stories 中取当前状态（确保点赞收藏数是最新的）
@@ -49,14 +50,12 @@ export const MyStoriesPage: React.FC = () => {
 
       <main className="max-w-md mx-auto px-4 py-4">
         {updatedMyStories.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="text-5xl mb-4">📖</div>
-            <h3 className="font-medium text-foreground mb-2">你还没有发布故事</h3>
-            <p className="text-sm text-muted mb-6">写下你的第一个故事，分享给大家吧</p>
-            <Button variant="primary" size="md" onClick={() => navigate('/publish')}>
-              发布故事
-            </Button>
-          </div>
+          <EmptyState
+            icon="📖"
+            title="你还没有发布故事"
+            description="写下你的第一个故事，分享给大家吧"
+            action={{ label: '发布故事', onClick: () => navigate('/publish') }}
+          />
         ) : (
           <div className="space-y-4">
             {updatedMyStories.map((story) => (
@@ -76,7 +75,7 @@ export const MyStoriesPage: React.FC = () => {
                   <button
                     onClick={() => {
                       if (confirm('确定删除这个故事吗？删除后无法恢复。')) {
-                        removeMyStory(story.id);
+                        removeStory(story.id);
                       }
                     }}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs text-danger bg-danger/10 rounded-full hover:bg-danger/20 transition-colors"
