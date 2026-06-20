@@ -33,14 +33,15 @@
 - **TD-2：测试回归**
   - 验证 `npm test`、`npm run lint`、`npm run check`、`npm run build` 全部通过
 
-### 阶段 1：**MVP — 匿名社区完整可用**
+### 阶段 1：**MVP — 匿名社区完整可用**（当前 Sprint）
 **目标**：用户能看、能发、能互动，内容是真实持久化的。
 
-- 故事发布后真正写入 Store（当前 PublishPage 的 onSuccess 只做页面跳转）
-- 评论功能真正工作（当前只渲染 mock 数据）
-- 个人中心页面：我的故事、我的收藏、发布历史
-- 按年龄段/标签筛选的完整逻辑
-- 预留后端 API 接入点（Service 层抽象）
+| 任务 | 说明 |
+|------|------|
+| 1.1 年龄段筛选 | 在首页补充年龄段（teen/worker/parent/elder）筛选，与现有标签筛选并列 |
+| 1.2 Service 层抽象 | 创建 `src/services/` 目录，抽象 storyService/commentService/userService，当前实现为 localStorage 封装，便于后续替换为真实 HTTP API |
+| 1.3 Layout 一致性 | 统一 AI/跨龄/我的三个 tab 的 Header 交互，避免与首页视觉不一致（TD-6） |
+| 1.4 页面级测试 | 为 HomePage / StoryDetailPage / ProfilePage 增加基础测试用例（TD-5） |
 
 ### 阶段 2：**AI 心理助手 — 接入真实 LLM**
 **目标**：对话有真实价值，不是随机文本。
@@ -69,14 +70,16 @@
 
 ## 三、技术债务清单
 
-| ID | 问题 | 位置 | 影响 | 计划修复阶段 |
-|----|------|------|------|-------------|
-| TD-1 | ~~无路由库，页面切换靠 useState 硬编码~~ | ~~App.tsx~~ | ~~核心流程阻塞：5 个 Tab 只能访问首页~~ | 阶段 0（正在进行） |
-| TD-2 | AI 回复是静态 mock | `data/mock.ts` | AI 助手无真实能力 | 阶段 2 |
-| TD-3 | 数据完全前端 Mock，无法跨设备持久化 | `data/mock.ts` + `store/index.ts` | 刷新后部分数据可恢复（Store 已持久化），但无法真正分享 | 阶段 1 |
-| TD-4 | 跨龄视角页面无内容 | `pages/CrossAge/CrossAgePage.tsx` | 核心差异化功能缺失 | 阶段 3 |
-| TD-5 | 测试覆盖浅，缺少页面级 / E2E 测试 | `src/__tests__/` | 回归风险 | 阶段 1 起逐步补充 |
-| TD-6 | 部分 Tab（AI/跨龄/我的）与首页 Layout 不一致 | `components/Layout/Header.tsx` | 视觉/交互不一致 | 阶段 0 顺便统一 |
+| ID | 问题 | 位置 | 影响 | 计划修复阶段 | 状态 |
+|----|------|------|------|-------------|------|
+| TD-1 | 无路由库，页面切换靠 useState 硬编码 | App.tsx | 核心流程阻塞：5 个 Tab 只能访问首页 | 阶段 0 | ✅ 已完成 |
+| TD-2 | AI 回复是静态 mock | `data/mock.ts` | AI 助手无真实能力 | 阶段 2 | 待处理 |
+| TD-3 | 数据完全前端，无法跨设备持久化 | `data/mock.ts` + `store/index.ts` | 刷新后数据可恢复（Store 已持久化），但无法跨设备分享 | 阶段 1 | Sprint 2 中 |
+| TD-4 | 跨龄视角页面内容较简单 | `pages/CrossAge/CrossAgePage.tsx` | 核心差异化功能可深化 | 阶段 3 | 待处理 |
+| TD-5 | 测试覆盖浅，缺少页面级 / E2E 测试 | `src/__tests__/` | 回归风险 | 阶段 1 | Sprint 2 中 |
+| TD-6 | 部分 Tab（AI/跨龄/我的）与首页 Layout 交互不一致 | `components/Layout/Header.tsx` | 视觉/交互不一致 | 阶段 1 | Sprint 2 中 |
+| TD-7 | 缺少 Service 层抽象，直接在组件内调用 store | 所有 pages / `store/index.ts` | 后续接入后端时改动面大 | 阶段 1 | Sprint 2 中 |
+| TD-8 | 首页缺少年龄段筛选维度 | `pages/Home/HomePage.tsx` | 个性化浏览体验不足 | 阶段 1 | Sprint 2 中 |
 
 ---
 
@@ -109,11 +112,41 @@
 
 ## 六、Sprint 日志
 
-### Sprint 1 — 引入 react-router-dom
-- 日期：2026-06-18
-- 目标：替换 App.tsx 的 useState 路由，BottomNav 接入 NavLink，5 个 Tab 可完整跳转
+### Sprint 1 — 引入 react-router-dom & 核心流打通
+- 日期：2026-06-18 ~ 2026-06-20
+- 目标：替换 App.tsx 的 useState 路由，BottomNav 接入 NavLink，5 个 Tab 可完整跳转，测试/构建全通过
 - 负责人：开发
-- 状态：进行中
+- 状态：✅ 已完成
+- 成果：
+  - `src/router/index.tsx` 建立统一路由表（/、/story/:id、/publish、/ai、/cross-age、/profile、/profile/stories、/profile/collections、/profile/edit、/login）
+  - `BottomNav.tsx` 接入 NavLink + 激活态样式
+  - `App.tsx` 简化为 RouterProvider 单一入口
+  - 质量门禁：`npm test`（14/14 通过）、`npm run lint`（无错误）、`npm run check`（无类型错误）、`npm run build`（构建成功）
+  - 我的故事/我的收藏页面已联动 store 数据
+  - 故事发布已写入 store（stories + myStories）
+  - 评论/点赞/收藏已全部联动 store
+
+---
+
+### Sprint 2 — MVP 匿名社区（阶段 1）
+- 日期：2026-06-20 起
+- 目标：补充年龄段筛选、建立 Service 层、统一 Layout、补齐页面测试
+- 负责人：开发
+- 状态：🚀 进行中
+- 任务清单（按执行顺序）：
+
+| 序号 | 任务 | 关联 TD | 交付物 | 验证方式 |
+|------|------|---------|--------|----------|
+| 2.1 | 首页增加年龄段筛选 | TD-8 | `HomePage.tsx` + `TagFilter` 新增 AgeGroupFilter 组件 | 手动验证筛选结果正确 + 新单测 |
+| 2.2 | Service 层抽象（story/comment/user） | TD-7 / TD-3 | `src/services/storyService.ts` / `commentService.ts` / `userService.ts` + `index.ts` | 类型检查通过 + Service 层单测 |
+| 2.3 | 统一各 Tab Layout（Header 样式/交互一致） | TD-6 | `Header.tsx` 重构为统一 prop API，各 Page 更新调用 | 视觉一致性检查 + lint/build 通过 |
+| 2.4 | 补充页面级测试（HomePage / StoryDetail / Profile） | TD-5 | `src/__tests__/pages/*.test.tsx` | `npm test` 新增用例全部通过 |
+
+- 完成标准：
+  - 首页可同时按"年龄段"与"标签"双维度筛选
+  - 所有页面组件不再直接调用 store action，改为通过 service 层间接调用
+  - AI / 跨龄 / 我的 三个 Tab 的 Header 交互与首页视觉一致
+  - `npm test` 新增 6+ 条用例，全部通过；`npm run lint` / `check` / `build` 均通过
 
 ---
 
