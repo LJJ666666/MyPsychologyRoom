@@ -30,36 +30,46 @@ export const ProfilePage: React.FC = () => {
   const displayDesc = user ? AGE_GROUP_LABELS[user.ageGroup] : '登录后享受更多功能';
   const avatarIcon = user?.ageGroup ? AGE_GROUP_ICONS[user.ageGroup] : '😊';
 
+  const handleAction = (path: string) => {
+    if (!user && path !== '/login') {
+      navigate('/login');
+      return;
+    }
+    navigate(path);
+  };
+
   const listItems = [
     {
       icon: BookOpen,
       label: '我的故事',
       value: myStories.length,
-      onClick: () => {},
+      onClick: () => handleAction('/profile/stories'),
     },
     {
       icon: Bookmark,
       label: '我的收藏',
       value: collectedStories.length,
-      onClick: () => {},
+      onClick: () => handleAction('/profile/collections'),
     },
     {
       icon: User,
       label: '个人信息',
       value: null,
-      onClick: () => {},
+      onClick: () => handleAction('/profile/edit'),
     },
     {
       icon: Settings,
       label: '设置',
       value: null,
-      onClick: () => {},
+      onClick: () => alert('设置功能即将上线～'),
     },
   ];
 
   const handleProfileClick = () => {
     if (!user) {
       navigate('/login');
+    } else {
+      navigate('/profile/edit');
     }
   };
 

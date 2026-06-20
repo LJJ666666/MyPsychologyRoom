@@ -37,6 +37,21 @@ npm run build
 npm run preview
 ```
 
+### ⚠️ 云端环境（TRAE）启动注意
+
+如果你在云端开发，**必须**指定 host 和固定端口，否则浏览器无法访问：
+
+```bash
+# 云端标准启动命令：绑定 0.0.0.0 + 固定端口 5173
+npm run dev -- --port 5173 --host 0.0.0.0
+```
+
+**常见问题**：
+- 启动日志只有 `Local: http://localhost:5173/` 而无 `Network` 行 → 说明 `--host 0.0.0.0` 没生效
+- 看到「Service not running」→ 可能是旧进程残留占用了端口，执行 `pkill -f "vite"` 后重新启动
+
+更多细节见 [ROADMAP.md 的云端开发注意事项](./ROADMAP.md#七云端开发注意事项-️)
+
 ## 目录结构
 
 ```

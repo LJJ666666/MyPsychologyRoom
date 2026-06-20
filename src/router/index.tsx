@@ -6,6 +6,9 @@ import { AIAssistantPage } from '../pages/AIAssistant/AIAssistantPage';
 import { CrossAgePage } from '../pages/CrossAge/CrossAgePage';
 import { ProfilePage } from '../pages/Profile/ProfilePage';
 import { LoginPage } from '../pages/Login/LoginPage';
+import MyStoriesPage from '../pages/MyStories/MyStoriesPage';
+import MyCollectionsPage from '../pages/MyCollections/MyCollectionsPage';
+import EditProfilePage from '../pages/EditProfile/EditProfilePage';
 import { storyDetailLoader } from './loaders';
 import { storyDetailAction, publishAction } from './actions';
 
@@ -36,6 +39,18 @@ export const router = createBrowserRouter([
   {
     path: '/profile',
     element: <ProfilePage />,
+  },
+  {
+    path: '/profile/stories',
+    element: <MyStoriesPage />,
+  },
+  {
+    path: '/profile/collections',
+    element: <MyCollectionsPage />,
+  },
+  {
+    path: '/profile/edit',
+    element: <EditProfilePage />,
   },
   {
     path: '/login',

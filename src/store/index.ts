@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Story, Comment, Message, AgeGroup, User } from '../types';
+import { Story, Comment, Message, User } from '../types';
 import { mockStories } from '../data/mock';
 
 interface AppState {
@@ -14,6 +14,7 @@ interface AppState {
   // User
   user: User | null;
   setUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
+  updateUser: (partialUser: Partial<Omit<User, 'id' | 'createdAt'>>) => void;
   logout: () => void;
 
   // My stories
@@ -107,6 +108,10 @@ export const useStore = create<AppState>()(
       // User
       user: null,
       setUser: (user) => set({ user: { ...user, id: `user-${Date.now()}`, createdAt: new Date().toISOString() } }),
+      updateUser: (partialUser) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...partialUser } : state.user,
+        })),
       logout: () => set({ user: null }),
 
       // My stories
