@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 import { Comment as CommentType, AGE_GROUP_LABELS } from '../../types';
+import { formatRelativeTime } from '../../utils/formatTime';
 
 interface CommentProps {
   comment: CommentType;
@@ -24,7 +25,7 @@ export const Comment: React.FC<CommentProps> = ({ comment }) => {
             {AGE_GROUP_LABELS[comment.author.ageGroup as keyof typeof AGE_GROUP_LABELS]}
           </span>
           <span className="text-xs text-muted">·</span>
-          <span className="text-xs text-muted">{comment.createdAt}</span>
+          <span className="text-xs text-muted">{formatRelativeTime(comment.createdAt)}</span>
         </div>
         <p className="text-sm text-foreground leading-relaxed mb-2">
           {comment.content}

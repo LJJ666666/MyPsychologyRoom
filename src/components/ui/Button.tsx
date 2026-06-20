@@ -7,11 +7,8 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  disabled?: boolean;
   fullWidth?: boolean;
   children: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {

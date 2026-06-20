@@ -82,7 +82,7 @@ describe('useStore - 故事管理', () => {
 
     useStore.getState().addComment(story.id, {
       content: '这是一条测试评论',
-      author: { nickname: '评论者', ageGroup: 'teen' },
+      author: { nickname: '评论者', ageGroup: 'teen', avatar: '😊' },
     });
 
     const after = useStore.getState().stories.find(s => s.id === story.id);

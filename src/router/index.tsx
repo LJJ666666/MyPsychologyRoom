@@ -9,8 +9,6 @@ import { LoginPage } from '../pages/Login/LoginPage';
 import MyStoriesPage from '../pages/MyStories/MyStoriesPage';
 import MyCollectionsPage from '../pages/MyCollections/MyCollectionsPage';
 import EditProfilePage from '../pages/EditProfile/EditProfilePage';
-import { storyDetailLoader } from './loaders';
-import { storyDetailAction, publishAction } from './actions';
 
 export const router = createBrowserRouter([
   {
@@ -20,13 +18,10 @@ export const router = createBrowserRouter([
   {
     path: '/story/:id',
     element: <StoryDetailPage />,
-    loader: storyDetailLoader,
-    action: storyDetailAction,
   },
   {
     path: '/publish',
     element: <PublishPage />,
-    action: publishAction,
   },
   {
     path: '/ai',

@@ -7,33 +7,37 @@ const anonymousAvatars = [
 
 const getRandomAvatar = () => anonymousAvatars[Math.floor(Math.random() * anonymousAvatars.length)];
 
+// 生成相对时间的 ISO 时间戳（小时/天为单位，方便展示层格式化）
+const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
+const daysAgo = (d: number) => new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString();
+
 export const mockComments: Comment[] = [
   {
     id: 'c1',
     content: '我理解你的感受，我也经历过类似的困惑。',
-    author: { nickname: '路过的心声', ageGroup: 'worker' },
-    createdAt: '2小时前',
+    author: { nickname: '路过的心声', ageGroup: 'worker', avatar: getRandomAvatar() },
+    createdAt: hoursAgo(2),
     likes: 12,
   },
   {
     id: 'c2',
     content: '抱抱你，一切都会好起来的。',
-    author: { nickname: '温暖的光', ageGroup: 'parent' },
-    createdAt: '3小时前',
+    author: { nickname: '温暖的光', ageGroup: 'parent', avatar: getRandomAvatar() },
+    createdAt: hoursAgo(3),
     likes: 8,
   },
   {
     id: 'c3',
     content: '我也曾经这样想过，但后来发现...',
-    author: { nickname: '时间的答案', ageGroup: 'elder' },
-    createdAt: '5小时前',
+    author: { nickname: '时间的答案', ageGroup: 'elder', avatar: getRandomAvatar() },
+    createdAt: hoursAgo(5),
     likes: 5,
   },
 ];
 
 export const mockStories: Story[] = [
   {
-    id: '1',
+    id: 'story-1',
     title: '18岁的我，真的很讨厌妈妈的唠叨',
     content: `妈妈每天都要问我学习怎么样，考试考了多少分，有没有复习。我知道她是关心我，但每次听到这些话，我心里就很烦躁。
 
@@ -47,21 +51,21 @@ export const mockStories: Story[] = [
       ageGroup: 'teen',
       avatar: getRandomAvatar(),
     },
-    createdAt: '2小时前',
+    createdAt: hoursAgo(2),
     likes: 128,
     comments: [
       {
         id: 'c1-1',
         content: '我懂你的感受，我以前也是这样。但后来我试着和妈妈好好谈了谈，发现她只是不知道该怎么表达担心。',
-        author: { nickname: '过来人', ageGroup: 'worker' },
-        createdAt: '1小时前',
+        author: { nickname: '过来人', ageGroup: 'worker', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(1),
         likes: 45,
       },
       {
         id: 'c1-2',
         content: '妈妈唠叨的背后，其实是不安的内心。试着理解她吧，你们需要的只是好好沟通。',
-        author: { nickname: '心理咨询师小林', ageGroup: 'worker' },
-        createdAt: '45分钟前',
+        author: { nickname: '心理咨询师小林', ageGroup: 'worker', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(1),
         likes: 32,
       },
     ],
@@ -69,7 +73,7 @@ export const mockStories: Story[] = [
     isCollected: false,
   },
   {
-    id: '2',
+    id: 'story-2',
     title: '作为新手妈妈，我有时候真的很崩溃',
     content: `宝宝刚满两岁，正是terrible two的阶段。每天从早到晚都在喊"不要不要"，喂饭不吃、穿衣不穿、出门要抱...
 
@@ -83,14 +87,14 @@ export const mockStories: Story[] = [
       ageGroup: 'parent',
       avatar: getRandomAvatar(),
     },
-    createdAt: '4小时前',
+    createdAt: hoursAgo(4),
     likes: 256,
     comments: [
       {
         id: 'c2-1',
         content: '妈妈，你已经很棒了！照顾好自己才能照顾好宝宝，偶尔情绪失控是正常的，不要太自责。',
-        author: { nickname: '理解的心', ageGroup: 'worker' },
-        createdAt: '3小时前',
+        author: { nickname: '理解的心', ageGroup: 'worker', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(3),
         likes: 67,
       },
     ],
@@ -98,7 +102,7 @@ export const mockStories: Story[] = [
     isCollected: true,
   },
   {
-    id: '3',
+    id: 'story-3',
     title: '35岁职场人：为什么我总觉得不够好？',
     content: `最近公司来了很多名校毕业的年轻人，他们聪明、勤奋、有想法。看着他们，我觉得自己好像停滞了。
 
@@ -112,14 +116,14 @@ export const mockStories: Story[] = [
       ageGroup: 'worker',
       avatar: getRandomAvatar(),
     },
-    createdAt: '6小时前',
+    createdAt: hoursAgo(6),
     likes: 189,
     comments: [],
     isLiked: false,
     isCollected: false,
   },
   {
-    id: '4',
+    id: 'story-4',
     title: '60岁的我，学会了和女儿和解',
     content: `年轻的时候，我觉得自己做妈妈很成功。女儿从小听话乖巧，学习也好。
 
@@ -135,21 +139,21 @@ export const mockStories: Story[] = [
       ageGroup: 'elder',
       avatar: getRandomAvatar(),
     },
-    createdAt: '1天前',
+    createdAt: daysAgo(1),
     likes: 412,
     comments: [
       {
         id: 'c4-1',
         content: '阿姨，您能意识到这一点真的很了不起。很多父母一辈子都做不到这种改变。',
-        author: { nickname: '感恩的心', ageGroup: 'teen' },
-        createdAt: '20小时前',
+        author: { nickname: '感恩的心', ageGroup: 'teen', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(20),
         likes: 89,
       },
       {
         id: 'c4-2',
         content: '看得我眼眶湿润...希望我的妈妈也能像您一样理解我。',
-        author: { nickname: '渴望理解', ageGroup: 'teen' },
-        createdAt: '18小时前',
+        author: { nickname: '渴望理解', ageGroup: 'teen', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(18),
         likes: 56,
       },
     ],
@@ -157,7 +161,7 @@ export const mockStories: Story[] = [
     isCollected: true,
   },
   {
-    id: '5',
+    id: 'story-5',
     title: '高中生的独白：我不喜欢现在的自己',
     content: `上了高中以后，我好像变了一个人。以前开朗活泼的我，现在变得不爱说话了。
 
@@ -173,14 +177,14 @@ export const mockStories: Story[] = [
       ageGroup: 'teen',
       avatar: getRandomAvatar(),
     },
-    createdAt: '8小时前',
+    createdAt: hoursAgo(8),
     likes: 321,
     comments: [
       {
         id: 'c5-1',
         content: '谢谢你的坦诚。很多人都有过这样的阶段，你不是一个人。愿意说出这些，说明你想要改变。',
-        author: { nickname: '倾听者', ageGroup: 'parent' },
-        createdAt: '7小时前',
+        author: { nickname: '倾听者', ageGroup: 'parent', avatar: getRandomAvatar() },
+        createdAt: hoursAgo(7),
         likes: 78,
       },
     ],
@@ -188,7 +192,7 @@ export const mockStories: Story[] = [
     isCollected: false,
   },
   {
-    id: '6',
+    id: 'story-6',
     title: '单亲爸爸的日常：既当爹又当妈',
     content: `离婚三年了，一个人带着8岁的儿子生活。
 
@@ -204,7 +208,7 @@ export const mockStories: Story[] = [
       ageGroup: 'worker',
       avatar: getRandomAvatar(),
     },
-    createdAt: '12小时前',
+    createdAt: hoursAgo(12),
     likes: 267,
     comments: [],
     isLiked: true,

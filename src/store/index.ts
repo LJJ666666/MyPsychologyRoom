@@ -3,36 +3,47 @@ import { persist } from 'zustand/middleware';
 import { Story, Comment, Message, User } from '../types';
 import { mockStories } from '../data/mock';
 
-interface AppState {
-  // Stories
-  stories: Story[];
-  addStory: (story: Omit<Story, 'id' | 'createdAt' | 'likes' | 'comments' | 'isLiked' | 'isCollected'>) => void;
-  likeStory: (storyId: string) => void;
-  collectStory: (storyId: string) => void;
-  addComment: (storyId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'likes'>) => void;
+// 通用 ID 生成器（问题2：Date.now() -> crypto.randomUUID()）
+export function generateId(prefix: string): string {
+  const core =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return `${prefix}-${core}`;
+}
 
-  // User
+// === 类型定义：按领域组织 ===
+
+interface StoriesDomain {
+  stories: Story[];
+  myStories: Story[];
+  addStory: (story: Omit<Story, 'id' | 'createdAt' | 'likes' | 'comments' | 'isLiked' | 'isCollected'>) => void;
+  removeMyStory: (storyId: string) => void;
+  likeStory: (storyId: string) => void;
+  addComment: (storyId: string, comment: Omit<Comment, 'id' | 'createdAt' | 'likes'>) => void;
+}
+
+interface CollectionsDomain {
+  myCollections: string[];
+  collectStory: (storyId: string) => void;
+  addCollection: (storyId: string) => void;
+  removeCollection: (storyId: string) => void;
+}
+
+interface UserDomain {
   user: User | null;
   setUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
   updateUser: (partialUser: Partial<Omit<User, 'id' | 'createdAt'>>) => void;
   logout: () => void;
+}
 
-  // My stories
-  myStories: Story[];
-  addMyStory: (story: Story) => void;
-  removeMyStory: (storyId: string) => void;
-
-  // My collections
-  myCollections: string[];
-  addCollection: (storyId: string) => void;
-  removeCollection: (storyId: string) => void;
-
-  // AI Chat
+interface ChatDomain {
   messages: Message[];
   addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => void;
   clearMessages: () => void;
+}
 
-  // UI
+interface UIDomain {
   activeTab: 'home' | 'ai' | 'cross-age' | 'profile';
   setActiveTab: (tab: 'home' | 'ai' | 'cross-age' | 'profile') => void;
   storyFilter: 'latest' | 'hottest';
@@ -41,16 +52,34 @@ interface AppState {
   setSelectedTag: (tag: string | null) => void;
 }
 
-export const useStore = create<AppState>()(
+export interface AppStore
+  extends StoriesDomain,
+    CollectionsDomain,
+    UserDomain,
+    ChatDomain,
+    UIDomain {}
+
+// === 默认状态与 action 实现 ===
+
+const initialAI: Message = {
+  id: generateId('msg'),
+  role: 'ai',
+  content:
+    '你好，欢迎来到这里。我是AI心理助手，很高兴你能信任我，愿意说说你的事情。',
+  timestamp: new Date().toISOString(),
+};
+
+export const useStore = create<AppStore>()(
   persist(
     (set) => ({
-      // Stories
+      // —— 故事领域（StoriesDomain）——
       stories: mockStories,
+      myStories: [],
       addStory: (story) => {
         const newStory: Story = {
           ...story,
-          id: `story-${Date.now()}`,
-          createdAt: '刚刚',
+          id: generateId('story'),
+          createdAt: new Date().toISOString(),
           likes: 0,
           comments: [],
           isLiked: false,
@@ -61,7 +90,11 @@ export const useStore = create<AppState>()(
           myStories: [newStory, ...state.myStories],
         }));
       },
-      likeStory: (storyId) => {
+      removeMyStory: (storyId) =>
+        set((state) => ({
+          myStories: state.myStories.filter((s) => s.id !== storyId),
+        })),
+      likeStory: (storyId) =>
         set((state) => ({
           stories: state.stories.map((story) =>
             story.id === storyId
@@ -72,28 +105,12 @@ export const useStore = create<AppState>()(
                 }
               : story
           ),
-        }));
-      },
-      collectStory: (storyId) => {
-        set((state) => {
-          const isCollected = state.myCollections.includes(storyId);
-          return {
-            stories: state.stories.map((story) =>
-              story.id === storyId
-                ? { ...story, isCollected: !story.isCollected }
-                : story
-            ),
-            myCollections: isCollected
-              ? state.myCollections.filter((id) => id !== storyId)
-              : [...state.myCollections, storyId],
-          };
-        });
-      },
+        })),
       addComment: (storyId, comment) => {
         const newComment: Comment = {
           ...comment,
-          id: `comment-${Date.now()}`,
-          createdAt: '刚刚',
+          id: generateId('comment'),
+          createdAt: new Date().toISOString(),
           likes: 0,
         };
         set((state) => ({
@@ -105,60 +122,66 @@ export const useStore = create<AppState>()(
         }));
       },
 
-      // User
+      // —— 收藏领域（CollectionsDomain）——
+      myCollections: [],
+      collectStory: (storyId) =>
+        set((state) => {
+          const isCollected = state.myCollections.includes(storyId);
+          return {
+            stories: state.stories.map((story) =>
+              story.id === storyId ? { ...story, isCollected: !isCollected } : story
+            ),
+            myCollections: isCollected
+              ? state.myCollections.filter((id) => id !== storyId)
+              : [...state.myCollections, storyId],
+          };
+        }),
+      addCollection: (storyId) =>
+        set((state) => ({
+          stories: state.stories.map((story) =>
+            story.id === storyId ? { ...story, isCollected: true } : story
+          ),
+          myCollections: state.myCollections.includes(storyId)
+            ? state.myCollections
+            : [...state.myCollections, storyId],
+        })),
+      removeCollection: (storyId) =>
+        set((state) => ({
+          stories: state.stories.map((story) =>
+            story.id === storyId ? { ...story, isCollected: false } : story
+          ),
+          myCollections: state.myCollections.filter((id) => id !== storyId),
+        })),
+
+      // —— 用户领域（UserDomain）——
       user: null,
-      setUser: (user) => set({ user: { ...user, id: `user-${Date.now()}`, createdAt: new Date().toISOString() } }),
+      setUser: (user) =>
+        set({
+          user: {
+            ...user,
+            id: generateId('user'),
+            createdAt: new Date().toISOString(),
+          },
+        }),
       updateUser: (partialUser) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...partialUser } : state.user,
         })),
       logout: () => set({ user: null }),
 
-      // My stories
-      myStories: [],
-      addMyStory: (story) => set((state) => ({ myStories: [story, ...state.myStories] })),
-      removeMyStory: (storyId) =>
-        set((state) => ({ myStories: state.myStories.filter((s) => s.id !== storyId) })),
-
-      // My collections
-      myCollections: [],
-      addCollection: (storyId) =>
-        set((state) => ({ myCollections: [...state.myCollections, storyId] })),
-      removeCollection: (storyId) =>
-        set((state) => ({
-          myCollections: state.myCollections.filter((id) => id !== storyId),
-        })),
-
-      // AI Chat
-      messages: [
-        {
-          id: 'ai-greeting',
-          role: 'ai',
-          content: '你好，欢迎来到这里。我是AI心理助手，很高兴你能信任我，愿意说说你的事情。',
-          timestamp: new Date().toISOString(),
-        },
-      ],
+      // —— 聊天领域（ChatDomain）——
+      messages: [initialAI],
       addMessage: (message) => {
         const newMessage: Message = {
           ...message,
-          id: `msg-${Date.now()}`,
+          id: generateId('msg'),
           timestamp: new Date().toISOString(),
         };
         set((state) => ({ messages: [...state.messages, newMessage] }));
       },
-      clearMessages: () =>
-        set({
-          messages: [
-            {
-              id: 'ai-greeting-reset',
-              role: 'ai',
-              content: '你好，欢迎来到这里。我是AI心理助手，很高兴你能信任我，愿意说说你的事情。',
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        }),
+      clearMessages: () => set({ messages: [initialAI] }),
 
-      // UI
+      // —— UI 领域（UIDomain）——
       activeTab: 'home',
       setActiveTab: (tab) => set({ activeTab: tab }),
       storyFilter: 'latest',
@@ -169,12 +192,42 @@ export const useStore = create<AppState>()(
     {
       name: 'psychology-room-storage',
       partialize: (state) => ({
-        user: state.user,
+        // 按领域选择要持久化的部分
+        stories: state.stories,
         myStories: state.myStories,
         myCollections: state.myCollections,
+        user: state.user,
         messages: state.messages,
-        stories: state.stories,
       }),
     }
   )
 );
+
+// 各领域 selector hooks（按需使用）
+export const useStories = () => {
+  const { stories, myStories, addStory, removeMyStory, likeStory, addComment } = useStore();
+  return { stories, myStories, addStory, removeMyStory, likeStory, addComment };
+};
+
+export const useCollections = () => {
+  const { myCollections, collectStory, addCollection, removeCollection } = useStore();
+  return { myCollections, collectStory, addCollection, removeCollection };
+};
+
+export const useUser = () => {
+  const { user, setUser, updateUser, logout } = useStore();
+  return { user, setUser, updateUser, logout };
+};
+
+export const useChat = () => {
+  const { messages, addMessage, clearMessages } = useStore();
+  return { messages, addMessage, clearMessages };
+};
+
+export const useUI = () => {
+  const { activeTab, setActiveTab, storyFilter, setStoryFilter, selectedTag, setSelectedTag } =
+    useStore();
+  return { activeTab, setActiveTab, storyFilter, setStoryFilter, selectedTag, setSelectedTag };
+};
+
+export default useStore;

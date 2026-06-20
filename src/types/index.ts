@@ -11,11 +11,7 @@ export interface Author {
 export interface Comment {
   id: string;
   content: string;
-  author: {
-    nickname: string;
-    ageGroup: AgeGroup;
-    avatar?: string;
-  };
+  author: Author;
   createdAt: string;
   likes: number;
 }

@@ -7,6 +7,7 @@ import { useStore } from '../../store';
 import { useAuth } from '../../hooks/useAuth';
 import { AGE_GROUP_LABELS, STORY_TYPE_LABELS } from '../../types';
 import { Card, Avatar, Tag, Badge, Divider, Button } from '../../components/ui';
+import { formatRelativeTime } from '../../utils/formatTime';
 
 export const StoryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -81,7 +82,7 @@ export const StoryDetailPage: React.FC = () => {
             <div>
               <div className="font-medium text-foreground">{story.author.nickname}</div>
               <div className="text-xs text-muted">
-                {AGE_GROUP_LABELS[story.author.ageGroup]} · {story.createdAt}
+                {AGE_GROUP_LABELS[story.author.ageGroup]} · {formatRelativeTime(story.createdAt)}
               </div>
             </div>
             <Badge

@@ -3,6 +3,7 @@ import { Heart, MessageCircle, Bookmark } from 'lucide-react';
 import { Story, AGE_GROUP_LABELS, STORY_TYPE_LABELS } from '../../types';
 import { Card, Avatar, Tag, Badge, Divider } from '../ui';
 import { useStore } from '../../store';
+import { formatRelativeTime } from '../../utils/formatTime';
 
 interface StoryCardProps {
   story: Story;
@@ -31,7 +32,7 @@ export const StoryCard: React.FC<StoryCardProps> = ({ story, onClick }) => {
           <div>
             <div className="font-medium text-foreground text-sm">{story.author.nickname}</div>
             <div className="text-2xs text-muted">
-              {AGE_GROUP_LABELS[story.author.ageGroup]} · {story.createdAt}
+              {AGE_GROUP_LABELS[story.author.ageGroup]} · {formatRelativeTime(story.createdAt)}
             </div>
           </div>
         </div>

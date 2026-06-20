@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus, TrendingUp, Clock } from 'lucide-react';
 import { Header, BottomNav } from '../../components/Layout';
 import { StoryCard } from '../../components/StoryCard';
@@ -8,17 +8,52 @@ import { useStore } from '../../store';
 import { popularTags } from '../../data/mock';
 import { Button } from '../../components/ui';
 
+type StoryFilter = 'latest' | 'hottest';
+
 export default function HomePage() {
   const navigate = useNavigate();
-  const { stories, storyFilter, setStoryFilter, selectedTag, setSelectedTag } = useStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { stories, setStoryFilter, setSelectedTag } = useStore();
 
+  // 从 URL 读取筛选参数（问题7：selectedTag / storyFilter 同步到 URL）
+  const storyFilter: StoryFilter = searchParams.get('filter') === 'hottest' ? 'hottest' : 'latest';
+  const selectedTag: string | null = searchParams.get('tag');
+
+  // 同步 store（向后兼容）
+  React.useEffect(() => {
+    setStoryFilter(storyFilter);
+    setSelectedTag(selectedTag);
+  }, [storyFilter, selectedTag, setStoryFilter, setSelectedTag]);
+
+  const handleFilterChange = (filter: StoryFilter) => {
+    const next = new URLSearchParams(searchParams);
+    if (filter === 'latest') {
+      next.delete('filter');
+    } else {
+      next.set('filter', filter);
+    }
+    setSearchParams(next);
+  };
+
+  const handleTagChange = (tag: string | null) => {
+    const next = new URLSearchParams(searchParams);
+    if (!tag) {
+      next.delete('tag');
+    } else {
+      next.set('tag', tag);
+    }
+    setSearchParams(next);
+  };
+
+  // 按 createdAt 倒序（最新），或按点赞数（最热）
   const filteredStories = stories
     .filter((story) => !selectedTag || story.tags.includes(selectedTag))
     .sort((a, b) => {
       if (storyFilter === 'hottest') {
         return b.likes - a.likes;
       }
-      return 0;
+      // 按 ISO 时间戳比较（问题3：createdAt 存 ISO，可自然排序）
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
   return (
@@ -29,7 +64,7 @@ export default function HomePage() {
       <div className="sticky top-14 bg-background/95 backdrop-blur-sm z-30 px-4 py-3 border-b border-divider">
         <div className="max-w-md mx-auto flex items-center gap-4 mb-3">
           <button
-            onClick={() => setStoryFilter('latest')}
+            onClick={() => handleFilterChange('latest')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               storyFilter === 'latest'
                 ? 'bg-primary text-white'
@@ -40,7 +75,7 @@ export default function HomePage() {
             最新
           </button>
           <button
-            onClick={() => setStoryFilter('hottest')}
+            onClick={() => handleFilterChange('hottest')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               storyFilter === 'hottest'
                 ? 'bg-accent text-white'
@@ -54,7 +89,7 @@ export default function HomePage() {
         <TagFilter
           tags={popularTags.slice(0, 6)}
           selectedTag={selectedTag}
-          onSelectTag={setSelectedTag}
+          onSelectTag={(tag) => handleTagChange(tag === selectedTag ? null : tag)}
         />
       </div>
 
