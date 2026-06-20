@@ -50,7 +50,11 @@ interface UIDomain {
   setStoryFilter: (filter: 'latest' | 'hottest') => void;
   selectedTag: string | null;
   setSelectedTag: (tag: string | null) => void;
+  selectedAgeGroup: AgeGroup | null;
+  setSelectedAgeGroup: (ageGroup: AgeGroup | null) => void;
 }
+
+type AgeGroup = 'teen' | 'worker' | 'parent' | 'elder';
 
 export interface AppStore
   extends StoriesDomain,
@@ -188,6 +192,8 @@ export const useStore = create<AppStore>()(
       setStoryFilter: (filter) => set({ storyFilter: filter }),
       selectedTag: null,
       setSelectedTag: (tag) => set({ selectedTag: tag }),
+      selectedAgeGroup: null,
+      setSelectedAgeGroup: (ageGroup) => set({ selectedAgeGroup: ageGroup }),
     }),
     {
       name: 'psychology-room-storage',
@@ -225,9 +231,26 @@ export const useChat = () => {
 };
 
 export const useUI = () => {
-  const { activeTab, setActiveTab, storyFilter, setStoryFilter, selectedTag, setSelectedTag } =
-    useStore();
-  return { activeTab, setActiveTab, storyFilter, setStoryFilter, selectedTag, setSelectedTag };
+  const {
+    activeTab,
+    setActiveTab,
+    storyFilter,
+    setStoryFilter,
+    selectedTag,
+    setSelectedTag,
+    selectedAgeGroup,
+    setSelectedAgeGroup,
+  } = useStore();
+  return {
+    activeTab,
+    setActiveTab,
+    storyFilter,
+    setStoryFilter,
+    selectedTag,
+    setSelectedTag,
+    selectedAgeGroup,
+    setSelectedAgeGroup,
+  };
 };
 
 export default useStore;

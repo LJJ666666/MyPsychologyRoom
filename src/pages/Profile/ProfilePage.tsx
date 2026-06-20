@@ -73,9 +73,27 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  // 个人中心右侧：登录状态提示
+  const profileRightContent = user ? (
+    <button
+      onClick={handleProfileClick}
+      className="flex items-center gap-1.5 text-sm text-primary hover:text-primary transition-colors"
+    >
+      <User size={18} />
+      <span>编辑</span>
+    </button>
+  ) : (
+    <button
+      onClick={() => navigate('/login')}
+      className="text-sm text-primary hover:text-primary transition-colors"
+    >
+      登录
+    </button>
+  );
+
   return (
     <div className="min-h-screen bg-background pb-24">
-      <Header title="个人中心" />
+      <Header title="个人中心" rightContent={profileRightContent} />
 
       <main className="max-w-md mx-auto px-4 py-4">
         {/* 个人资料卡 */}

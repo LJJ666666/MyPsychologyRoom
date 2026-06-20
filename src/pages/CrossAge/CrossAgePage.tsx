@@ -23,9 +23,16 @@ export const CrossAgePage: React.FC = () => {
     (p) => p.ageGroup === activePerspective
   );
 
+  // 跨龄视角右侧：话题计数 + 切话题快捷
+  const crossAgeRightContent = (
+    <span className="text-xs text-muted">
+      {crossAgeTopics.length} 个话题
+    </span>
+  );
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Header title="跨龄视角" />
+      <Header title="跨龄视角" rightContent={crossAgeRightContent} />
 
       <main className="max-w-md mx-auto px-4 py-4">
         {/* Intro Card */}

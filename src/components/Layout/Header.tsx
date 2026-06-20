@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bell } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface HeaderProps {
   title?: string;
@@ -19,11 +19,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 bg-surface/95 backdrop-blur-sm border-b border-border z-40">
       <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center flex-1 min-w-0">
           {showBack && (
             <button
               onClick={onBack}
-              className="mr-3 p-1 -ml-1 rounded-lg hover:bg-surface-muted transition-colors"
+              className="mr-3 p-1 -ml-1 rounded-lg hover:bg-surface-muted transition-colors flex-shrink-0"
+              aria-label="返回"
             >
               <svg
                 width="24"
@@ -40,26 +41,23 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
           {showSearch ? (
-            <div className="flex items-center bg-surface-muted rounded-full px-4 py-2 w-64">
-              <Search size={18} className="text-muted mr-2" />
+            <div className="flex items-center bg-surface-muted rounded-full px-4 py-2 w-full max-w-xs">
+              <Search size={18} className="text-muted mr-2 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="搜索故事..."
-                className="bg-transparent outline-none text-sm flex-1 placeholder-muted"
+                className="bg-transparent outline-none text-sm flex-1 placeholder-muted min-w-0"
               />
             </div>
           ) : (
-            <h1 className="font-serif text-xl font-semibold text-foreground">
+            <h1 className="font-serif text-xl font-semibold text-foreground truncate">
               {title}
             </h1>
           )}
         </div>
-        {rightContent || (
-          <div className="flex items-center gap-2">
-            <button className="p-2 rounded-full hover:bg-surface-muted transition-colors relative">
-              <Bell size={22} className="text-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full" />
-            </button>
+        {rightContent && (
+          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+            {rightContent}
           </div>
         )}
       </div>
