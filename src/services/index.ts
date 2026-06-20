@@ -2,7 +2,7 @@
  * Service 层统一入口
  *
  * 组件应通过此文件导入 services，而不是直接操作 store：
- *   import { useStoryService, useCommentService, useUserService } from '../services';
+ *   import { useStoryService, useChatService } from '../services';
  *
  * 未来接入后端 API 时，只需替换各 service 的实现，组件代码无需改动。
  */
@@ -14,3 +14,6 @@ export type { CommentService } from './commentService';
 
 export { useUserService } from './userService';
 export type { UserService } from './userService';
+
+export { useChatService } from './chatService';
+export type { ChatService, LlmMode } from './chatService';

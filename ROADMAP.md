@@ -151,6 +151,39 @@
 
 ---
 
+### Sprint 3 — AI 心理助手（接入真实 LLM）
+- 目标：Service 层接入真实对话能力（同时保留 mock 模式），增加 Prompt 工程、对话上下文管理、流式响应
+- 负责人：开发
+- 状态：✅ 已完成
+
+#### 技术方案
+- **双模式切换**：通过 `VITE_LLM_MODE=mock|api` 环境变量切换；默认 `mock`
+- **Prompt 工程**：
+  - System Prompt：设定角色（温暖、共情、专业、安全边界）
+  - 对话上下文：保留最近 10 条消息作为对话历史
+  - 安全边界：检测自伤/他伤倾向时返回警示语并引导专业求助
+- **API 协议**：兼容 OpenAI Chat Completions 格式（`POST /v1/chat/completions`）
+- **流式响应**：支持 SSE（`stream: true`），前端逐字符渲染，打字效果
+
+#### 任务清单
+| 序号 | 任务 | 交付物 |
+|------|------|--------|
+| 3.1 | 创建 `chatService`（mock + API 双模式、流式响应、上下文管理、Prompt 工程） | `src/services/chatService.ts` |
+| 3.2 | 更新 `services/index.ts` 导出 chatService | `src/services/index.ts` |
+| 3.3 | 重构 `AIAssistantPage` 接入 chatService | `src/pages/AIAssistant/AIAssistantPage.tsx` |
+| 3.4 | 配置 Vite 代理与 `.env.example` | `vite.config.ts` / `.env.example` |
+| 3.5 | 新增 AI 对话测试（页面渲染 + 状态管理） | `src/__tests__/pages/AIAssistantPage.test.tsx` |
+
+- 成果：
+  - 新增 `useChatService`：统一管理对话发送、上下文管理、安全边界、流式打字效果
+  - AIAssistantPage 重构：接入 chatService，实时流式渲染 AI 回复
+  - `.env.example`：提供完整的 LLM 配置说明，支持 mock/api 双模式切换
+  - Vite 代理配置：`/api` 路径代理转发至 `localhost:3000`
+  - 测试总数 55 条，新增 8 条 AI 对话专项测试
+  - 质量门禁全部通过：`npm test` (55/55) ✓ · `npm run lint` (0 error) ✓ · `npm run check` ✓ · `npm run build` ✓
+
+---
+
 ## 七、云端开发注意事项 ⚠️
 
 > 本节记录 TRAE 云端开发环境中开发服务器（dev server）常见的坑和标准操作流程。

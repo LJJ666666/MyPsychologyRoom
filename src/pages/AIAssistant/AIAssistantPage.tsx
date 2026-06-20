@@ -4,46 +4,53 @@ import { Send, RefreshCw } from 'lucide-react';
 import { Header, BottomNav } from '../../components/Layout';
 import { ChatBubble } from '../../components/ChatBubble';
 import { useStore } from '../../store';
-import { getAIResponse } from '../../data/mock';
 import { Card, Button } from '../../components/ui';
+import { useChatService } from '../../services';
 
 export const AIAssistantPage: React.FC = () => {
   const { messages, addMessage, clearMessages } = useStore();
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatService = useChatService();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesEndRef.current;
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingText]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputText.trim() || isTyping) return;
 
-    addMessage({
-      role: 'user',
-      content: inputText.trim(),
-    });
+    const userText = inputText.trim();
     setInputText('');
-
     setIsTyping(true);
-    setTimeout(() => {
-      const response = getAIResponse(inputText);
-      addMessage({
-        role: 'ai',
-        content: response,
-      });
-      setIsTyping(false);
-    }, 1500);
+    setStreamingText('');
+
+    addMessage({ role: 'user', content: userText });
+
+    const finalText = await chatService.sendMessage(userText, messages, (partial) => {
+      setStreamingText(partial);
+    });
+
+    setStreamingText('');
+    addMessage({ role: 'ai', content: finalText });
+    setIsTyping(false);
   };
 
   const handleClear = () => {
     clearMessages();
+    setStreamingText('');
   };
+
+  const currentMode = chatService.getMode();
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-24">
@@ -86,18 +93,33 @@ export const AIAssistantPage: React.FC = () => {
               <ChatBubble key={message.id} message={message} />
             ))}
 
-            {/* Typing Indicator */}
+            {/* Streaming / Typing Indicator */}
             {isTyping && (
               <div className="flex gap-3 mb-4 animate-fade-in">
                 <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
                   <span className="text-lg">🌸</span>
                 </div>
-                <div className="bg-surface shadow-soft px-4 py-3 rounded-2xl rounded-tl-sm">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
+                <div className="bg-surface shadow-soft px-4 py-3 rounded-2xl rounded-tl-sm max-w-[80%]">
+                  {streamingText ? (
+                    <div className="text-sm leading-relaxed text-foreground">
+                      {streamingText}
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      <span
+                        className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-muted rounded-full animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -107,7 +129,7 @@ export const AIAssistantPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Input Area - 在 BottomNav 上方 */}
+      {/* Input Area — 在 BottomNav 上方 */}
       <div className="fixed left-0 right-0 z-40 bg-surface border-t border-border px-4 py-3" style={{ bottom: '64px' }}>
         <div className="max-w-md mx-auto flex gap-3">
           <input
@@ -116,7 +138,7 @@ export const AIAssistantPage: React.FC = () => {
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="倾诉你的心事..."
-            className="flex-1 px-5 py-3.5 bg-surface-muted rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/20 transition-shadow"
+            className="flex-1 px-5 py-3.5 bg-surface-muted rounded-full text-sm outline-none placeholder-muted focus:ring-2 focus:ring-primary/20 transition-shadow disabled:opacity-50"
             disabled={isTyping}
           />
           <button
@@ -128,7 +150,7 @@ export const AIAssistantPage: React.FC = () => {
           </button>
         </div>
         <p className="text-xs text-center text-muted mt-3">
-          AI助手仅供参考，如有严重心理困扰请寻求专业帮助
+          AI助手仅供参考，如有严重心理困扰请寻求专业帮助 · 当前模式：{currentMode === 'api' ? '真实对话' : '模拟模式'}
         </p>
       </div>
 
