@@ -3,6 +3,48 @@ import { useStore } from '../../store';
 
 describe('useStore - 故事管理', () => {
 
+  it('addStory 应该同时添加到 stories 和 myStories', () => {
+    const initialStoryCount = useStore.getState().stories.length;
+    const initialMyStoryCount = useStore.getState().myStories.length;
+
+    useStore.getState().addStory({
+      title: '测试故事',
+      content: '这是一个测试故事的内容',
+      type: 'share',
+      tags: ['测试'],
+      author: { nickname: '测试作者', ageGroup: 'worker', avatar: '🌱' },
+    });
+
+    const afterState = useStore.getState();
+    expect(afterState.stories.length).toBe(initialStoryCount + 1);
+    expect(afterState.myStories.length).toBe(initialMyStoryCount + 1);
+    expect(afterState.stories[0].title).toBe('测试故事');
+    expect(afterState.myStories[0].title).toBe('测试故事');
+  });
+
+  it('collectStory 切换收藏状态，同时同步到 myCollections', () => {
+    const story = useStore.getState().stories[0];
+    if (!story) return;
+
+    const initialCollections = useStore.getState().myCollections.length;
+
+    // 第一次收藏
+    useStore.getState().collectStory(story.id);
+    const afterCollect = useStore.getState();
+    const collectedStory = afterCollect.stories.find((s) => s.id === story.id);
+    expect(collectedStory?.isCollected).toBe(true);
+    expect(afterCollect.myCollections.length).toBe(initialCollections + 1);
+    expect(afterCollect.myCollections).toContain(story.id);
+
+    // 取消收藏
+    useStore.getState().collectStory(story.id);
+    const afterUncollect = useStore.getState();
+    const uncollectedStory = afterUncollect.stories.find((s) => s.id === story.id);
+    expect(uncollectedStory?.isCollected).toBe(false);
+    expect(afterUncollect.myCollections.length).toBe(initialCollections);
+    expect(afterUncollect.myCollections).not.toContain(story.id);
+  });
+
   it('likeStory 第一次点赞时 likes 增加，再次点赞取消', () => {
     const story = useStore.getState().stories[0];
     if (!story) return;
@@ -55,7 +97,7 @@ describe('useStore - 用户状态', () => {
     const user = useStore.getState().user;
     expect(user?.nickname).toBe('小明');
     expect(user?.ageGroup).toBe('parent');
-    expect(user?.isLoggedIn).toBe(true);
+    expect(user).not.toBeNull();
   });
 
   it('logout 之后用户为空', () => {

@@ -57,6 +57,7 @@ export const useStore = create<AppState>()(
         };
         set((state) => ({
           stories: [newStory, ...state.stories],
+          myStories: [newStory, ...state.myStories],
         }));
       },
       likeStory: (storyId) => {
@@ -73,13 +74,19 @@ export const useStore = create<AppState>()(
         }));
       },
       collectStory: (storyId) => {
-        set((state) => ({
-          stories: state.stories.map((story) =>
-            story.id === storyId
-              ? { ...story, isCollected: !story.isCollected }
-              : story
-          ),
-        }));
+        set((state) => {
+          const isCollected = state.myCollections.includes(storyId);
+          return {
+            stories: state.stories.map((story) =>
+              story.id === storyId
+                ? { ...story, isCollected: !story.isCollected }
+                : story
+            ),
+            myCollections: isCollected
+              ? state.myCollections.filter((id) => id !== storyId)
+              : [...state.myCollections, storyId],
+          };
+        });
       },
       addComment: (storyId, comment) => {
         const newComment: Comment = {
@@ -161,6 +168,7 @@ export const useStore = create<AppState>()(
         myStories: state.myStories,
         myCollections: state.myCollections,
         messages: state.messages,
+        stories: state.stories,
       }),
     }
   )
