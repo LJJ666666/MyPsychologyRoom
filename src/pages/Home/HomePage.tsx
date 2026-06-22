@@ -94,45 +94,45 @@ export default function HomePage() {
     <div className="flex flex-col h-full">
       <Header title="心理治疗室" rightContent={homeRightContent} />
 
-      {/* 主内容区域 - 独立滚动 */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background">
-        {/* 筛选栏：最新/最热 + 年龄段 + 话题标签 */}
-        <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-30 px-4 py-3 border-b border-divider">
-          <div className="max-w-md mx-auto">
-            <div className="flex items-center gap-4 mb-3">
-              <button
-                onClick={() => handleFilterChange('latest')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  storyFilter === 'latest'
-                    ? 'bg-primary text-white'
-                    : 'text-muted hover:bg-surface-muted'
-                }`}
-              >
-                <Clock size={16} />
-                最新
-              </button>
-              <button
-                onClick={() => handleFilterChange('hottest')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  storyFilter === 'hottest'
-                    ? 'bg-accent text-white'
-                    : 'text-muted hover:bg-surface-muted'
-                }`}
-              >
-                <TrendingUp size={16} />
-                最热
-              </button>
-            </div>
+      {/* 筛选栏 - 固定定位在 Header 下方 */}
+      <div className="fixed left-0 right-0 top-14 bg-background/95 backdrop-blur-sm z-30 px-4 py-3 border-b border-divider">
+        <div className="max-w-md mx-auto">
+          <div className="flex items-center gap-4 mb-3">
+            <button
+              onClick={() => handleFilterChange('latest')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                storyFilter === 'latest'
+                  ? 'bg-primary text-white'
+                  : 'text-muted hover:bg-surface-muted'
+              }`}
+            >
+              <Clock size={16} />
+              最新
+            </button>
+            <button
+              onClick={() => handleFilterChange('hottest')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                storyFilter === 'hottest'
+                  ? 'bg-accent text-white'
+                  : 'text-muted hover:bg-surface-muted'
+              }`}
+            >
+              <TrendingUp size={16} />
+              最热
+            </button>
+          </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-              <AgeGroupFilter
-                selectedAgeGroup={selectedAgeGroup}
-                onSelectAgeGroup={handleAgeGroupChange}
-              />
-            </div>
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+            <AgeGroupFilter
+              selectedAgeGroup={selectedAgeGroup}
+              onSelectAgeGroup={handleAgeGroupChange}
+            />
           </div>
         </div>
+      </div>
 
+      {/* 主内容区域 - 独立滚动 */}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background pt-20">
         {/* 故事列表 */}
         <div className="max-w-md mx-auto px-4 py-4">
           {filteredStories.length === 0 ? (
