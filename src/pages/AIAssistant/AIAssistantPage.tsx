@@ -53,7 +53,7 @@ export const AIAssistantPage: React.FC = () => {
   const currentMode = chatService.getMode();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-24">
+    <div className="flex flex-col h-full">
       <Header
         title="AI心理助手"
         rightContent={
@@ -70,8 +70,8 @@ export const AIAssistantPage: React.FC = () => {
       />
 
       {/* Chat Area */}
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-md mx-auto pb-8">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background">
+        <div className="max-w-md mx-auto px-4 py-4">
           {/* Welcome Card */}
           <Card className="!bg-gradient-to-br !from-primary/5 !to-accent/5 !shadow-none !border-0 mb-6">
             <div className="text-center animate-fade-in">

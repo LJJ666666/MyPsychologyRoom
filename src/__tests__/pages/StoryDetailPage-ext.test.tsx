@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import StoryDetailPage from '../../pages/StoryDetail/StoryDetailPage';
+import { StoryDetailPage } from '../../pages/StoryDetail/StoryDetailPage';
 import { useStore } from '../../store';
 
 const renderDetail = (storyId: string) => {

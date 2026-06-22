@@ -26,68 +26,72 @@ export const MyStoriesPage: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="flex flex-col h-full">
         <Header title="我的故事" showBack onBack={() => navigate('/profile')} />
-        <main className="max-w-md mx-auto px-4 py-12">
-          <Card padding="lg" className="text-center">
-            <div className="w-20 h-20 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-              <span className="text-4xl">🔒</span>
-            </div>
-            <h2 className="font-serif text-xl font-medium text-foreground mb-2">需要登录</h2>
-            <p className="text-sm text-muted mb-6">登录后可以查看你发布的所有故事</p>
-            <Button variant="primary" size="md" onClick={() => navigate('/login')}>
-              立即登录
-            </Button>
-          </Card>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background">
+          <div className="max-w-md mx-auto px-4 py-12">
+            <Card padding="lg" className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                <span className="text-4xl">🔒</span>
+              </div>
+              <h2 className="font-serif text-xl font-medium text-foreground mb-2">需要登录</h2>
+              <p className="text-sm text-muted mb-6">登录后可以查看你发布的所有故事</p>
+              <Button variant="primary" size="md" onClick={() => navigate('/login')}>
+                立即登录
+              </Button>
+            </Card>
+          </div>
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-10">
+    <div className="flex flex-col h-full">
       <Header title="我的故事" showBack onBack={() => navigate('/profile')} />
 
-      <main className="max-w-md mx-auto px-4 py-4">
-        {updatedMyStories.length === 0 ? (
-          <EmptyState
-            icon="📖"
-            title="你还没有发布故事"
-            description="写下你的第一个故事，分享给大家吧"
-            action={{ label: '发布故事', onClick: () => navigate('/publish') }}
-          />
-        ) : (
-          <div className="space-y-4">
-            {updatedMyStories.map((story) => (
-              <div key={story.id} className="relative group">
-                <StoryCard
-                  story={story}
-                  onClick={() => navigate(`/story/${story.id}`)}
-                />
-                <div className="flex justify-end gap-2 mt-2">
-                  <button
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background">
+        <div className="max-w-md mx-auto px-4 py-4">
+          {updatedMyStories.length === 0 ? (
+            <EmptyState
+              icon="📖"
+              title="你还没有发布故事"
+              description="写下你的第一个故事，分享给大家吧"
+              action={{ label: '发布故事', onClick: () => navigate('/publish') }}
+            />
+          ) : (
+            <div className="space-y-4">
+              {updatedMyStories.map((story) => (
+                <div key={story.id} className="relative group">
+                  <StoryCard
+                    story={story}
                     onClick={() => navigate(`/story/${story.id}`)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted bg-surface-muted rounded-full hover:text-foreground transition-colors"
-                  >
-                    <Eye size={14} />
-                    查看详情
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('确定删除这个故事吗？删除后无法恢复。')) {
-                        removeStory(story.id);
-                      }
-                    }}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-danger bg-danger/10 rounded-full hover:bg-danger/20 transition-colors"
-                  >
-                    <Trash2 size={14} />
-                    删除
-                  </button>
+                  />
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button
+                      onClick={() => navigate(`/story/${story.id}`)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs text-muted bg-surface-muted rounded-full hover:text-foreground transition-colors"
+                    >
+                      <Eye size={14} />
+                      查看详情
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm('确定删除这个故事吗？删除后无法恢复。')) {
+                          removeStory(story.id);
+                        }
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs text-danger bg-danger/10 rounded-full hover:bg-danger/20 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                      删除
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

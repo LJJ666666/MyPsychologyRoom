@@ -91,85 +91,69 @@ export default function HomePage() {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="flex flex-col h-full">
       <Header title="心理治疗室" rightContent={homeRightContent} />
 
-      {/* 筛选栏：最新/最热 + 年龄段 + 话题标签 */}
-      <div className="sticky top-14 bg-background/95 backdrop-blur-sm z-30 px-4 py-3 border-b border-divider">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center gap-4 mb-3">
-            <button
-              onClick={() => handleFilterChange('latest')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                storyFilter === 'latest'
-                  ? 'bg-primary text-white'
-                  : 'text-muted hover:bg-surface-muted'
-              }`}
-            >
-              <Clock size={16} />
-              最新
-            </button>
-            <button
-              onClick={() => handleFilterChange('hottest')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                storyFilter === 'hottest'
-                  ? 'bg-accent text-white'
-                  : 'text-muted hover:bg-surface-muted'
-              }`}
-            >
-              <TrendingUp size={16} />
-              最热
-            </button>
-          </div>
-          <div className="mb-2">
-            <AgeGroupFilter
-              selectedAgeGroup={selectedAgeGroup}
-              onSelectAgeGroup={handleAgeGroupChange}
-            />
-          </div>
-          <TagFilter
-            tags={popularTags.slice(0, 6)}
-            selectedTag={selectedTag}
-            onSelectTag={(tag) => handleTagChange(tag === selectedTag ? null : tag)}
-          />
-        </div>
-      </div>
+      {/* 主内容区域 - 独立滚动 */}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background">
+        {/* 筛选栏：最新/最热 + 年龄段 + 话题标签 */}
+        <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-30 px-4 py-3 border-b border-divider">
+          <div className="max-w-md mx-auto">
+            <div className="flex items-center gap-4 mb-3">
+              <button
+                onClick={() => handleFilterChange('latest')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  storyFilter === 'latest'
+                    ? 'bg-primary text-white'
+                    : 'text-muted hover:bg-surface-muted'
+                }`}
+              >
+                <Clock size={16} />
+                最新
+              </button>
+              <button
+                onClick={() => handleFilterChange('hottest')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  storyFilter === 'hottest'
+                    ? 'bg-accent text-white'
+                    : 'text-muted hover:bg-surface-muted'
+                }`}
+              >
+                <TrendingUp size={16} />
+                最热
+              </button>
+            </div>
 
-      {/* 故事列表 */}
-      <main className="max-w-md mx-auto px-4 py-4">
-        {filteredStories.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="text-5xl mb-4">📝</div>
-            <h3 className="font-medium text-foreground mb-2">
-              {selectedAgeGroup && selectedTag
-                ? '该年龄段和话题下暂无故事'
-                : selectedAgeGroup
-                  ? '该年龄段还没有故事'
-                  : selectedTag
-                    ? '该话题下暂无故事'
-                    : '还没有人发布故事'}
-            </h3>
-            <p className="text-sm text-muted mb-6">
-              {selectedAgeGroup || selectedTag
-                ? '换个筛选条件，或者成为第一个分享者'
-                : '分享你的故事，温暖彼此的心'}
-            </p>
-            <Button variant="primary" size="md" onClick={() => navigate('/publish')}>
-              <Plus size={16} className="mr-1" />
-              发布故事
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4 stagger-children">
-            {filteredStories.map((story) => (
-              <StoryCard
-                key={story.id}
-                story={story}
-                onClick={() => navigate(`/story/${story.id}`)}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+              <AgeGroupFilter
+                selectedAgeGroup={selectedAgeGroup}
+                onSelectAgeGroup={handleAgeGroupChange}
               />
-            ))}
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* 故事列表 */}
+        <div className="max-w-md mx-auto px-4 py-4">
+          {filteredStories.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <span className="text-3xl">📭</span>
+              </div>
+              <p className="text-muted text-sm">暂无符合条件的故事</p>
+            </div>
+          ) : (
+            <div className="space-y-4 stagger-children">
+              {filteredStories.map((story) => (
+                <StoryCard
+                  key={story.id}
+                  story={story}
+                  onClick={() => navigate(`/story/${story.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* 悬浮发布按钮 */}
@@ -177,7 +161,7 @@ export default function HomePage() {
         variant="primary"
         size="md"
         onClick={() => navigate('/publish')}
-        className="fixed right-4 bottom-20 w-14 h-14 rounded-full shadow-lg !p-0"
+        className="fixed right-4 bottom-20 w-14 h-14 rounded-full shadow-lg !p-0 z-50"
       >
         <Plus size={28} strokeWidth={2.5} />
       </Button>
