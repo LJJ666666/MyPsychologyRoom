@@ -132,7 +132,7 @@ export default function HomePage() {
       </div>
 
       {/* 主内容区域 - 独立滚动 */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background pt-20">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background pt-24">
         {/* 故事列表 */}
         <div className="max-w-md mx-auto px-4 py-4">
           {filteredStories.length === 0 ? (
