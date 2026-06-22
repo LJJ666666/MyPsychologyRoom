@@ -237,6 +237,48 @@
 
 ---
 
+### Sprint 5 — 跨年龄视角 + 页面联调（阶段 2）
+- 目标：打通跨年龄视角（CrossAge）页面、完善个人中心 Tab 联动、补充专项测试
+- 负责人：开发
+- 状态：✅ 已完成
+
+#### 核心成果
+- **CrossAge 状态管理**：在 store 中新增 `CrossAgeDomain`，包含 `topics`、`activeTopicId`、`activePerspective`、`setActiveTopic`、`setActivePerspective`、`getActiveTopic`、`getActivePerspective`
+- **CrossAgeCard 组件**：统一封装话题卡片 + 视角详情渲染（`src/components/CrossAge/CrossAgeCard.tsx`）
+- **CrossAgePage 重构**：接入 store 的 `useCrossAge` selector，移除本地 useState 管理
+- **个人中心 Tab 联动**：ProfilePage → MyStories / MyCollections / EditProfile 完整跳转链已打通（Header back 返回 Profile）
+- **测试增长**：新增 `CrossAgePage.test.tsx`（页面渲染 + 话题切换 + 视角切换）和 `store-crossage.test.ts`（store 层单元测试）
+
+#### 质量门禁验证
+- `npm test`：92 / 92 通过 ✅
+- `npm run lint`：0 错误 ✅
+- `npm run check`（tsc）：无类型错误 ✅
+- `npm run build`：Vite 构建成功 ✅
+
+---
+
+### Sprint 6 — 响应式优化 + 空状态一致性（规划中）
+- 目标：移动端/桌面端/平板三尺寸响应式布局优化，统一 EmptyState 在各页面的使用，补充 Edge Case 测试
+- 负责人：开发
+- 状态：📌 待启动
+- **预计启动时间**：Sprint 5 验收通过后
+
+#### 任务清单（规划稿）
+| 序号 | 任务 | 交付物 | 验证方式 |
+|------|------|--------|----------|
+| 6.1 | CrossAge 页面响应式优化（375px / 768px / 1200px） | `CrossAgePage.tsx` | agent-browser 三视口截图 |
+| 6.2 | 首页故事列表响应式优化（卡片间距、字号、列数） | `HomePage.tsx` + `StoryCard.tsx` | 三视口截图 |
+| 6.3 | 个人中心页面响应式优化（Avatar 大小、列表布局） | `ProfilePage.tsx`、`EditProfilePage.tsx` | 三视口截图 |
+| 6.4 | 统一各页面的 EmptyState（话题为空、故事为空、收藏为空） | 各页面组件 | 统一视觉风格 |
+| 6.5 | 专项测试：空状态渲染测试、断网降级测试 | `src/__tests__/pages/*.test.tsx` | `npm test` 通过 |
+
+#### 完成标准
+- 三视口截图（375px / 768px / 1200px）中所有页面正常显示，无溢出、无错位
+- 所有空场景使用统一的 EmptyState 组件
+- `npm test` ≥ 100 条、`npm run lint` = 0 error、`npm run check` & `npm run build` 通过
+
+---
+
 ## 七、云端开发注意事项 ⚠️
 
 > 本节记录 TRAE 云端开发环境中开发服务器（dev server）常见的坑和标准操作流程。

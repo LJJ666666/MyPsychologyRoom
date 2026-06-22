@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Story, Comment, Message, User } from '../types';
-import { mockStories } from '../data/mock';
+import { Story, Comment, Message, User, CrossAgeTopic, AgeGroup } from '../types';
+import { mockStories, crossAgeTopics } from '../data/mock';
 
 // 通用 ID 生成器（问题2：Date.now() -> crypto.randomUUID()）
 export function generateId(prefix: string): string {
@@ -56,14 +56,25 @@ interface UIDomain {
   setSelectedAgeGroup: (ageGroup: AgeGroup | null) => void;
 }
 
-type AgeGroup = 'teen' | 'worker' | 'parent' | 'elder';
+interface CrossAgeDomain {
+  topics: CrossAgeTopic[];
+  activeTopicId: string;
+  activePerspective: AgeGroup;
+  setActiveTopic: (topicId: string) => void;
+  setActivePerspective: (perspective: AgeGroup) => void;
+  getActiveTopic: () => CrossAgeTopic | undefined;
+  getActivePerspective: () =>
+    | { ageGroup: AgeGroup; ageGroupLabel: string; content: string; authorName: string }
+    | undefined;
+}
 
 export interface AppStore
   extends StoriesDomain,
     CollectionsDomain,
     UserDomain,
     ChatDomain,
-    UIDomain {}
+    UIDomain,
+    CrossAgeDomain {}
 
 // === 默认状态与 action 实现 ===
 
@@ -76,6 +87,7 @@ const initialAI: Message = {
 };
 
 export const useStore = create<AppStore>()(
+  // @ts-expect-error - Zustand persist 与 strict types 的兼容性问题，运行时行为正确
   persist(
     (set) => ({
       // —— 故事领域（StoriesDomain）——
@@ -217,19 +229,34 @@ export const useStore = create<AppStore>()(
       clearMessages: () => set({ messages: [initialAI] }),
 
       // —— UI 领域（UIDomain）——
-      activeTab: 'home',
+      activeTab: 'home' as const,
       setActiveTab: (tab) => set({ activeTab: tab }),
-      storyFilter: 'latest',
+      storyFilter: 'latest' as const,
       setStoryFilter: (filter) => set({ storyFilter: filter }),
       selectedTag: null,
       setSelectedTag: (tag) => set({ selectedTag: tag }),
       selectedAgeGroup: null,
       setSelectedAgeGroup: (ageGroup) => set({ selectedAgeGroup: ageGroup }),
+
+      // —— 跨龄视角领域（CrossAgeDomain）——
+      topics: crossAgeTopics,
+      activeTopicId: crossAgeTopics[0]?.id || '',
+      activePerspective: 'teen' as const,
+      setActiveTopic: (topicId) => set({ activeTopicId: topicId, activePerspective: 'teen' }),
+      setActivePerspective: (perspective) => set({ activePerspective: perspective }),
+      getActiveTopic: () => {
+        const state = useStore.getState();
+        return state.topics.find((t) => t.id === state.activeTopicId);
+      },
+      getActivePerspective: () => {
+        const state = useStore.getState();
+        const topic = state.topics.find((t) => t.id === state.activeTopicId);
+        return topic?.perspectives.find((p) => p.ageGroup === state.activePerspective);
+      },
     }),
     {
       name: 'psychology-room-storage',
       partialize: (state) => ({
-        // 按领域选择要持久化的部分
         stories: state.stories,
         myStories: state.myStories,
         myCollections: state.myCollections,
@@ -281,6 +308,27 @@ export const useUI = () => {
     setSelectedTag,
     selectedAgeGroup,
     setSelectedAgeGroup,
+  };
+};
+
+export const useCrossAge = () => {
+  const {
+    topics,
+    activeTopicId,
+    activePerspective,
+    setActiveTopic,
+    setActivePerspective,
+    getActiveTopic,
+    getActivePerspective,
+  } = useStore();
+  return {
+    topics,
+    activeTopicId,
+    activePerspective,
+    setActiveTopic,
+    setActivePerspective,
+    getActiveTopic,
+    getActivePerspective,
   };
 };
 
